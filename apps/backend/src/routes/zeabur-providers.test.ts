@@ -4,14 +4,12 @@ import { ObjectId } from 'mongodb'
 
 import { errorHandler } from '@/lib/errors'
 import { useAgentDeviceStore } from '@/lib/test/doubles/agent-devices-store'
-import { useAuthMiddleware } from '@/lib/test/doubles/auth-middleware'
 import { useByosAccount } from '@/lib/test/doubles/byos-account'
 import { useByosSecrets } from '@/lib/test/doubles/byos-secrets'
 import { useModels } from '@/lib/test/doubles/models'
 
 import type { TeamAuthVariables } from '@/middleware/auth'
 import type { ZeaburProviderBinding } from '@/models'
-import type { MiddlewareHandler } from 'hono'
 
 const teamId = new ObjectId()
 const userId = new ObjectId().toHexString()
@@ -63,11 +61,6 @@ useByosSecrets({
     return `test-token-${encrypted.ciphertext}`
   },
 })
-const allowTeamRole: MiddlewareHandler = async (_c, next) => {
-  await next()
-}
-
-useAuthMiddleware({ requireTeamRole: () => allowTeamRole })
 useAgentDeviceStore({ isActiveTeamMember: () => false })
 
 const { zeaburProvidersRoutes, publicView } = await import('@/routes/zeabur-providers')
@@ -77,6 +70,7 @@ const app = new Hono<{ Variables: TeamAuthVariables }>()
 app.onError(errorHandler)
 app.use('*', async (c, next) => {
   c.set('teamId', teamId.toHexString())
+  c.set('teamRole', 'ADMINISTRATOR')
   await next()
 })
 app.route('/', zeaburProvidersRoutes)
