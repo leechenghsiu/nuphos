@@ -240,12 +240,28 @@ struct ChatComposerBar<Controls: View>: View {
             // scroll or select in; empty, a pull down on it closes too.
             .simultaneousGesture(pullDown, isEnabled: !hasText)
             .onSubmit(send)
+            // A vertical field types the return key as a newline and never submits,
+            // under a key labelled Send. One typed newline sends instead; pasted
+            // text keeps its lines.
+            .onChange(of: text) { old, new in
+                guard new.count == old.count + 1 else { return }
+                let index = new.index(new.startIndex, offsetBy: zip(old, new).prefix { $0 == $1 }.count)
+                var stripped = new
+                guard stripped.remove(at: index).isNewline, stripped == old else { return }
+                text = stripped
+                send()
+            }
             #if canImport(UIKit)
             .onReceive(NotificationCenter.default.publisher(for: UITextView.textDidBeginEditingNotification)) { note in
-                guard allowsAttachments, let textView = note.object as? UITextView else { return }
+                guard let textView = note.object as? UITextView else { return }
                 // Focus lands a moment later; it tells this field from others.
+                // Checked once, a slow focus update left the field without the
+                // handler, so an image paste did nothing.
                 Task { @MainActor in
-                    if focused, textView.isFirstResponder { pasteHandler.attach(to: textView) { paste($0) } }
+                    for _ in 0..<10 {
+                        if focused, textView.isFirstResponder { pasteHandler.attach(to: textView) { paste($0) }; return }
+                        try? await Task.sleep(for: .milliseconds(50))
+                    }
                 }
             }
             #endif
@@ -438,6 +454,8 @@ struct ChatComposerBar<Controls: View>: View {
                        _ = provider.loadTransferable(type: String.self) { continuation.resume(returning: try? $0.get()) }
                    }) {
                     text += string
+                } else if !allowsAttachments {
+                    attachmentError = "Send attachments after this turn; it takes text now."
                 } else if let attachment = await ComposerAttachment.load(pasted: provider) {
                     attachments.append(attachment)
                 } else {
@@ -462,9 +480,9 @@ struct ChatComposerBar<Controls: View>: View {
         .accessibilityLabel(label)
     }
 
-    /// One button, never two: a running turn with nothing typed stops it,
-    /// and what is typed goes into that turn where the runtime takes it,
-    /// otherwise into the queue.
+    /// A running turn with nothing typed: the button stops it. What is typed
+    /// goes into that turn where the runtime takes it, otherwise into the
+    /// queue, and a stop button stays beside it as on Desktop.
     private var action: ComposerAction {
         .current(
             isStreaming: isStreaming,
@@ -476,6 +494,23 @@ struct ChatComposerBar<Controls: View>: View {
     }
 
     private var trailingButton: some View {
+        HStack(spacing: 6) {
+            if action != .stop, isStreaming, canStop, let onStop {
+                Button(action: onStop) {
+                    Image(systemName: ComposerAction.stop.systemImage)
+                        .font(Theme.Text.secondary.weight(.bold))
+                        .frame(width: 34, height: 34)
+                        .foregroundStyle(Theme.heading)
+                        .background(Theme.muted.opacity(0.18), in: Circle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(ComposerAction.stop.accessibilityLabel)
+            }
+            primaryButton
+        }
+    }
+
+    private var primaryButton: some View {
         let action = action
         return Button {
             if action == .stop { onStop?() } else { send() }

@@ -300,8 +300,10 @@ struct AgentPage: View {
                     .listRowBackground(Color.clear)
                     .listRowInsets(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 16))
                     .listSectionSeparator(.hidden, edges: .top)
-                    // A separator would cut through the lines of an open tree.
-                    .listRowSeparator(item.depth > 0 || (item.hasChildren && !folded) ? .hidden : .automatic)
+                    // A separator would cut through the lines of an open tree. Only the bottom
+                    // edge: adjacent rows share a separator, so hiding a row's top would also
+                    // drop the one under the row before the tree.
+                    .listRowSeparator(item.continuesTree ? .hidden : .automatic, edges: .bottom)
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) { rowActions(conversation) }
                     // The same actions for a long press or a secondary click.
                     .contextMenu { rowActions(conversation) }

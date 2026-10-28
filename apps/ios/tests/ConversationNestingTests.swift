@@ -26,12 +26,14 @@ enum ConversationNestingTests {
         precondition(rows.map(\.id) == ["parent", "child-b", "child-a", "grandchild", "other"])
         precondition(rows.map(\.trail) == [[], [true], [false], [false, false], []])
         precondition(rows.map(\.threads) == [3, 0, 1, 0, 0])
+        precondition(rows.map(\.continuesTree) == [true, true, true, false, false])
     }
 
     private static func foldingHidesTheSubtree() {
         let rows = ConversationNesting.nest(tree, folded: ["parent"])
         precondition(rows.map(\.id) == ["parent", "other"])
         precondition(rows[0].hasChildren)
+        precondition(!rows[0].continuesTree)
         precondition(rows[0].hidden.map(\.sessionId) == ["child-b", "child-a", "grandchild"])
     }
 

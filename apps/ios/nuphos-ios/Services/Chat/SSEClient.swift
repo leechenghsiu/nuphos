@@ -15,6 +15,8 @@ struct SSEEvent: Sendable, Equatable {
 enum SSEClient {
     enum Failure: LocalizedError {
         case badStatus(Int, body: String?)
+        /// 202: the server put the message in the session queue; no turn started.
+        case queued
         case notEventStream(String?)
         case idleTimeout
         /// Heartbeats kept coming but no event did — a dead run.
@@ -23,6 +25,7 @@ enum SSEClient {
         var errorDescription: String? {
             switch self {
             case .badStatus(let code, let body): body.flatMap(SSEClient.errorMessage) ?? "Nuphos returned status \(code)."
+            case .queued: "Your message waits for the turn ahead."
             case .notEventStream(let type): "Expected an event stream, got \(type ?? "nothing")."
             case .idleTimeout: "The connection went quiet for too long."
             case .frameTimeout: "The runtime went quiet; the reply was closed."
@@ -61,6 +64,7 @@ enum SSEClient {
                         let message = String(decoding: text, as: UTF8.self)
                         throw Failure.badStatus(http.statusCode, body: message.isEmpty ? nil : message)
                     }
+                    if http.statusCode == 202 { throw Failure.queued }
                     let contentType = http.value(forHTTPHeaderField: "Content-Type") ?? ""
                     guard contentType.contains("text/event-stream") else {
                         throw Failure.notEventStream(contentType)

@@ -227,15 +227,26 @@ struct ConversationView: View {
                     .foregroundStyle(Theme.heading)
                     .lineLimit(1)
                 if let name = session.runtimeDisplayName {
-                    HStack(spacing: 4) {
-                        RuntimeMark(runtime: session.isNativeRuntime ? session.agentRuntime : nil)
-                        Text(name)
-                            .font(Theme.Text.micro)
-                            .foregroundStyle(Theme.muted)
-                            .lineLimit(1)
+                    // The runtime under the title switches it, as Desktop's agent menu does.
+                    Button { showRuntimes = true } label: {
+                        HStack(spacing: 4) {
+                            RuntimeMark(runtime: session.isNativeRuntime ? session.agentRuntime : nil)
+                            Text(name)
+                                .font(Theme.Text.micro)
+                                .foregroundStyle(Theme.muted)
+                                .lineLimit(1)
+                            if session.canManage {
+                                Image(systemName: "chevron.down")
+                                    .font(.system(size: 8, weight: .semibold))
+                                    .foregroundStyle(Theme.muted)
+                            }
+                        }
                     }
+                    .buttonStyle(.plain)
+                    .disabled(!session.canManage || session.isStreaming)
                     .accessibilityElement(children: .combine)
                     .accessibilityLabel("Runtime: \(name)")
+                    .accessibilityHint(session.canManage ? "Switch runtime" : "")
                 } else if !session.loaded {
                     Text(" ").font(Theme.Text.micro).accessibilityHidden(true)
                 }
@@ -256,10 +267,18 @@ struct ConversationView: View {
     /// The composer, with any queued messages above it.
     private var composer: some View {
         VStack(spacing: 0) {
-            if !session.queued.isEmpty {
+            if let suggestion = session.promptSuggestion, draft.isEmpty, !session.isStreaming,
+               session.canSubmit, session.failedSubmission == nil {
+                SuggestionChip(text: suggestion) { draft = suggestion }
+            }
+            if !session.queued.isEmpty || !session.serverQueued.isEmpty {
                 QueuedStrip(
-                    items: session.queued,
-                    onRemove: { session.removeQueued(at: $0) }
+                    items: session.queued.enumerated().map { QueuedStrip.Item(id: "local.\($0.offset)", text: $0.element, removable: true) }
+                        + session.serverQueued.map { QueuedStrip.Item(id: $0.id, text: $0.text, removable: $0.mine) },
+                    onRemove: { id in
+                        if id.hasPrefix("local."), let index = Int(id.dropFirst(6)) { session.removeQueued(at: index) }
+                        else { Task { await session.unqueue(id) } }
+                    }
                 )
             }
             ChatComposerBar(
@@ -267,9 +286,10 @@ struct ConversationView: View {
                 isStreaming: session.isStreaming,
                 canSend: session.canSubmit,
                 canStop: session.canCancel,
-                sendsDuringTurn: session.isNativeRuntime,
+                // A busy agent takes the message into its queue: the button says so.
+                sendsDuringTurn: session.isNativeRuntime && !session.queuesOnServer,
                 canSteer: session.canSteer,
-                allowsAttachments: !session.canSteer,
+                allowsAttachments: !session.canSteer && !session.queuesOnServer,
                 failedSubmission: $session.failedSubmission,
                 mentions: MentionSource(
                     teamId: session.teamId,
@@ -710,22 +730,59 @@ struct ResourceStrip: View {
 }
 
 /// Queued messages waiting for the current reply to finish.
+/// The runtime's guess at the next message. Tapping it fills the composer,
+/// where it can be edited or sent: Desktop's Tab-to-accept, for a phone.
+struct SuggestionChip: View {
+    let text: String
+    var onUse: () -> Void
+
+    var body: some View {
+        HStack {
+            Button(action: onUse) {
+                HStack(spacing: 6) {
+                    Image(systemName: "sparkles").font(Theme.Text.micro)
+                    Text(text).lineLimit(1).font(Theme.Text.label)
+                }
+                .foregroundStyle(Theme.body)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 7)
+                .background(Theme.chatSurface, in: Capsule())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Use suggestion: \(text)")
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 16)
+        .padding(.bottom, 6)
+        .transition(.opacity)
+    }
+}
+
 struct QueuedStrip: View {
-    let items: [String]
-    var onRemove: (Int) -> Void
+    struct Item: Identifiable {
+        let id: String
+        let text: String
+        /// Only the sender takes a message back out of the session queue.
+        let removable: Bool
+    }
+    let items: [Item]
+    var onRemove: (String) -> Void
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
-                ForEach(Array(items.enumerated()), id: \.offset) { index, item in
+                ForEach(items) { item in
                     HStack(spacing: 6) {
                         Image(systemName: "clock").font(Theme.Text.micro)
-                        Text(item).lineLimit(1).font(Theme.Text.label)
-                        Button { onRemove(index) } label: {
-                            Image(systemName: "xmark").font(Theme.Text.micro.weight(.bold))
-                                .contentShape(Rectangle().inset(by: -10))
+                        Text(item.text).lineLimit(1).font(Theme.Text.label)
+                        if item.removable {
+                            Button { onRemove(item.id) } label: {
+                                Image(systemName: "xmark").font(Theme.Text.micro.weight(.bold))
+                                    .contentShape(Rectangle().inset(by: -10))
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel("Remove queued message")
                         }
-                        .buttonStyle(.plain)
                     }
                     .foregroundStyle(Theme.body)
                     .padding(.horizontal, 10)

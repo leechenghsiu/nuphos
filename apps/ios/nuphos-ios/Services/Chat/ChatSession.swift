@@ -113,7 +113,13 @@ final class ChatSession {
     var canSteer: Bool { !readOnly && isNativeRuntime && allows("steer") && !allows("reply") && !steeringPending }
     var canReply: Bool { !readOnly && (!isNativeRuntime || allows("reply")) }
     var canCancel: Bool { !readOnly && !isStopping && (isNativeRuntime ? allows("cancel") : transportStreaming) }
-    var canSubmit: Bool { loaded && loadError == nil && !readOnly && failedSubmission == nil && !submitting && !awaitingAdmission && !steeringPending && (!isNativeRuntime || isNew || allows("send") || canReply || canSteer) }
+    var canSubmit: Bool { loaded && loadError == nil && !readOnly && failedSubmission == nil && !submitting && !awaitingAdmission && !steeringPending && !enqueuing && (!isNativeRuntime || isNew || allows("send") || canReply || canSteer || queuesOnServer) }
+    /// The agent is busy and takes no message now: a send waits in the
+    /// session queue on the server, which runs it after the turn ahead.
+    var queuesOnServer: Bool { !readOnly && isNativeRuntime && !isNew && runtimeObservation != nil && !allows("send") && !allows("reply") && !canSteer }
+    /// What waits in the session queue, anyone's, in the order it runs.
+    private(set) var serverQueued: [AgentChatAPI.QueuedMessage] = []
+    private var enqueuing = false
     private func allows(_ action: String) -> Bool { runtimeObservation?.allows(action, at: observations.now) == true }
     private func receiveRuntime(_ snapshot: JSONValue?, observedAt: TimeInterval) {
         observations.receive(snapshot, team: teamId, session: sessionId, observedAt: observedAt)
@@ -351,10 +357,17 @@ final class ChatSession {
         let attachments = submission.attachments
         guard !trimmed.isEmpty || !attachments.isEmpty, !readOnly else { return }
         guard canSubmit else { return }
+        promptSuggestion = nil
         if canSteer {
             guard attachments.isEmpty else { error = "Send attachments after this turn; steering currently accepts text."; return }
             steeringPending = true
             Task { await steer(submission, text: trimmed) }
+            return
+        }
+        if queuesOnServer {
+            guard attachments.isEmpty else { error = "Send attachments after this turn; a queued message takes text."; return }
+            enqueuing = true
+            Task { await enqueue(submission, text: trimmed) }
             return
         }
         if transportStreaming && !isNativeRuntime {
@@ -398,10 +411,64 @@ final class ChatSession {
     var failedSubmission: ComposerSubmission?
 
     /// Only restore a request rejected before admission, never a resumed turn.
-    private func rejectOversizedSubmission(_ pending: (id: String, submission: ComposerSubmission)?) {
+    /// Left in the transcript, a message the server never stored would ride
+    /// along with the next send, which the server refuses as a batch.
+    private func rejectUnadmittedSubmission(_ pending: (id: String, submission: ComposerSubmission)?) {
         guard let pending else { return }
         failedSubmission = pending.submission
         messages.removeAll { $0.id == pending.id }
+    }
+
+    /// Puts a message in the session queue without touching the turn this
+    /// view follows. The server decides: it queues the message (202), or the
+    /// agent was free after all and the turn starts there, which the idle
+    /// poll then follows.
+    private func enqueue(_ submission: ComposerSubmission, text: String) async {
+        defer { enqueuing = false }
+        let window = transcriptWindow(full: false, rebase: nil)
+        let body = AgentChatAPI.ChatRequest(
+            id: sessionId, teamId: teamId,
+            messages: (window.messages + [.user(text)]).map(\.forWire),
+            baseIndex: window.baseIndex > 0 ? window.baseIndex : nil,
+            streamId: newId(), resume: false, resumeFrom: 0,
+            credentialAccess: credentialAccess?.json,
+            clientCapabilities: ["localTools": false, "resendsRefusal": true, "serverQueue": true]
+        )
+        do {
+            let request = try AgentChatAPI.chatRequest(token: token, body: body)
+            let (bytes, response) = try await URLSession.shared.bytes(for: request)
+            let status = (response as? HTTPURLResponse)?.statusCode ?? 0
+            if !(200..<300).contains(status) {
+                var text = Data()
+                for try await byte in bytes { text.append(byte); if text.count > 4000 { break } }
+                let conflict = AgentChatAPI.conflict(status: status, body: String(decoding: text, as: UTF8.self))
+                if case .messageQueued = conflict {} else { throw conflict }
+            }
+            bytes.task.cancel()
+            Analytics.shared.track("agent_message_queued", teamID: teamId)
+            await refreshServerQueue()
+        } catch {
+            failedSubmission = submission
+            self.error = error.localizedDescription
+        }
+    }
+
+    func refreshServerQueue() async {
+        guard isNativeRuntime, !isNew,
+              let items = try? await AgentChatAPI.queue(token: token, teamId: teamId, sessionId: sessionId) else { return }
+        if items != serverQueued { serverQueued = items }
+    }
+
+    /// Takes one of the user's own waiting messages back into the composer.
+    func unqueue(_ id: String) async {
+        do {
+            let text = try await AgentChatAPI.unqueue(token: token, teamId: teamId, sessionId: sessionId, messageId: id)
+            serverQueued.removeAll { $0.id == id }
+            if failedSubmission == nil { failedSubmission = ComposerSubmission(text: text, attachments: []) }
+        } catch {
+            self.error = "This message already started."
+            await refreshServerQueue()
+        }
     }
 
     func removeQueued(at index: Int) {
@@ -554,7 +621,7 @@ final class ChatSession {
     }
 
     private func dispatch(_ text: String) async {
-        await dispatch(.user(text), title: text)
+        await dispatch(.user(text), title: text, submission: ComposerSubmission(text: text, attachments: []))
     }
 
     /// Who is signed in, shown on what they send until the server's own
@@ -657,12 +724,20 @@ final class ChatSession {
     /// those never come, the turn is closed locally after the last probe.
     func stop() {
         if isNativeRuntime {
-            guard canCancel else { return }
+            // The button showed for a status that may be seconds old; the
+            // server decides from the live one.
+            guard !readOnly, !isStopping else { return }
             isStopping = true
             Task {
                 defer { isStopping = false }
-                do { try await AgentChatAPI.cancelRuntime(token: token, teamId: teamId, sessionId: sessionId) }
-                catch { self.error = error.localizedDescription }
+                do {
+                    try await AgentChatAPI.cancelRuntime(token: token, teamId: teamId, sessionId: sessionId)
+                    // Show the stopped turn now, not at the next idle poll.
+                    let observedAt = ProcessInfo.processInfo.systemUptime
+                    if let detail = try? await NuphosAPI.conversationDetail(token: token, teamId: teamId, sessionId: sessionId, tail: 1) {
+                        receiveRuntime(detail.runtimeState, observedAt: observedAt)
+                    }
+                } catch { self.error = error.localizedDescription }
             }
             return
         }
@@ -824,6 +899,22 @@ final class ChatSession {
         adoptTranscript(from: detail)
     }
 
+    /// A send the server queued is not in the transcript yet: its bubble
+    /// moves to the queue strip, and the turn that runs it adds it back.
+    private func moveToServerQueue(_ pending: (id: String, submission: ComposerSubmission)?) async {
+        if let pending { messages.removeAll { $0.id == pending.id } }
+        Analytics.shared.track("agent_message_queued", teamID: teamId)
+        await refreshServerQueue()
+    }
+
+    /// Replaces the transcript with the server's, even when it holds fewer
+    /// messages than this one.
+    private func adoptServerTranscript() async {
+        guard let detail = try? await NuphosAPI.conversationDetail(token: token, teamId: teamId, sessionId: sessionId) else { return }
+        messages = detail.messages
+        baseIndex = detail.messagesFirstIndex ?? 0
+    }
+
     private func adoptTranscript(from detail: AgentConversationDetail) {
         let serverTotal = (detail.messagesFirstIndex ?? 0) + detail.messages.count
         let localTotal = baseIndex + messages.count
@@ -852,7 +943,11 @@ final class ChatSession {
         lastSyncedSignature = signature()
     }
 
+    /// Desktop's Tab-to-accept guess; a phone offers it as a chip to tap.
+    private(set) var promptSuggestion: String?
+
     private func adoptRuntime(from detail: AgentConversationDetail) {
+        promptSuggestion = detail.promptSuggestion.flatMap { $0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : $0 }
         isOwner = detail.isOwner ?? false
         manages = detail.canManage ?? isOwner
         readOnly = detail.readOnly ?? true
@@ -878,6 +973,7 @@ final class ChatSession {
             guard !Task.isCancelled else { return }
             receiveRuntime(detail.runtimeState, observedAt: observedAt)
             adoptRuntime(from: detail)
+            if isNativeRuntime, isStreaming || queuesOnServer || !serverQueued.isEmpty { await refreshServerQueue() }
             if !pendingModelSettings.isEmpty { await refreshSessionConfig() }
             guard !submitting, attachedStreamId == attached else { continue }
             let follow = RuntimeTranscript.runToFollow(active: detail.activeRun?.streamId, attached: attached, stopped: lastStoppedStreamId)
@@ -949,7 +1045,7 @@ final class ChatSession {
                 agentRuntime: firstPost ? options.agentRuntime : nil,
                 runtimeId: firstPost ? options.runtimeId : nil,
                 initialSessionConfig: firstPost ? options.initialSessionConfig : nil,
-                clientCapabilities: ["localTools": false, "resendsRefusal": true]
+                clientCapabilities: ["localTools": false, "resendsRefusal": true, "serverQueue": true]
             )
 
             var needsFreshRetry = false
@@ -984,6 +1080,8 @@ final class ChatSession {
                         // Another turn took the runtime after admission; nothing was
                         // recorded, so send the message again like the HTTP refusal.
                         if code == "runtime_not_accepting_message" { refused = true; break }
+                        // The refused start went back to the session queue: it waits there.
+                        if code == "message_queued" { await moveToServerQueue(options.submission); return .aborted }
                         needsFreshRetry = true
                         continue
                     }
@@ -1011,11 +1109,14 @@ final class ChatSession {
             } catch let urlError as URLError where urlError.code == .cancelled {
                 return .aborted
             } catch is ChatPayload.TooLarge {
-                if !accepted && !shouldResume && reconnects == 0 { rejectOversizedSubmission(options.submission) }
+                if !accepted && !shouldResume && reconnects == 0 { rejectUnadmittedSubmission(options.submission) }
                 return .failed(ChatPayload.tooLargeMessage)
+            } catch SSEClient.Failure.queued {
+                await moveToServerQueue(options.submission)
+                return .aborted
             } catch SSEClient.Failure.badStatus(let status, let bodyText) {
                 if status == 413 {
-                    if !accepted && !shouldResume && reconnects == 0 { rejectOversizedSubmission(options.submission) }
+                    if !accepted && !shouldResume && reconnects == 0 { rejectUnadmittedSubmission(options.submission) }
                     return .failed(ChatPayload.tooLargeMessage)
                 }
                 let conflict = AgentChatAPI.conflict(status: status, body: bodyText)
@@ -1038,7 +1139,16 @@ final class ChatSession {
                     try? await Task.sleep(for: backoff(gatewayRetries, base: 0.7, max: 5))
                     if !isNativeRuntime && !options.explicitResume { forceFresh = true; resumeFrom = 0 } else { reconnects += 1 }
                     continue
+                case .messageQueued where !accepted:
+                    await moveToServerQueue(options.submission)
+                    return .aborted
+                case .other(let code, _, _) where code == "invalid_message_batch" && !accepted:
+                    // Messages here the server never stored: take the server's transcript.
+                    rejectUnadmittedSubmission(options.submission)
+                    await adoptServerTranscript()
+                    return .failed("This agent changed elsewhere and was reloaded. Send your message again.")
                 default:
+                    if !accepted && !shouldResume && reconnects == 0 { rejectUnadmittedSubmission(options.submission) }
                     return .failed(conflict.localizedDescription)
                 }
             } catch SSEClient.Failure.frameTimeout {

@@ -9,6 +9,9 @@ struct NestedConversation: Identifiable, Equatable {
     let hidden: [AgentConversation]
 
     var hasChildren: Bool { threads > 0 }
+    /// A tree line runs on into the next row: this row's own threads are open,
+    /// or a later sibling at some level still follows.
+    var continuesTree: Bool { (hasChildren && hidden.isEmpty) || trail.contains(true) }
 
     var id: String { conversation.sessionId }
     var depth: Int { trail.count }

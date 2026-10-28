@@ -171,6 +171,30 @@ enum AgentChatAPI {
         return try JSONDecoder().decode(Receipt.self, from: data).messageId
     }
 
+    /// One message waiting in the session queue: anyone's, in the order it runs.
+    struct QueuedMessage: Decodable, Identifiable, Equatable {
+        let id: String
+        let mine: Bool
+        let text: String
+    }
+
+    /// `GET /agent/conversations/:id/queue`
+    static func queue(token: String, teamId: String, sessionId: String) async throws -> [QueuedMessage] {
+        struct Queue: Decodable { let messages: [QueuedMessage] }
+        let data = try await send("GET", "agent/conversations/\(sessionId)/queue",
+            query: [URLQueryItem(name: "teamId", value: teamId)], token: token, body: Optional<Int>.none)
+        return try JSONDecoder().decode(Queue.self, from: data).messages
+    }
+
+    /// `DELETE /agent/conversations/:id/queue/:messageId` takes a waiting
+    /// message back (its sender only) and returns its text; 404 once it started.
+    static func unqueue(token: String, teamId: String, sessionId: String, messageId: String) async throws -> String {
+        struct Taken: Decodable { let text: String }
+        let data = try await send("DELETE", "agent/conversations/\(sessionId)/queue/\(messageId)",
+            query: [URLQueryItem(name: "teamId", value: teamId)], token: token, body: Optional<Int>.none)
+        return try JSONDecoder().decode(Taken.self, from: data).text
+    }
+
     static func cancelRuntime(token: String, teamId: String, sessionId: String) async throws {
         _ = try await send("POST", "agent/conversations/\(sessionId)/cancel-runtime",
             query: [URLQueryItem(name: "teamId", value: teamId)], token: token, body: Optional<Int>.none)
@@ -321,6 +345,8 @@ enum AgentChatAPI {
         case streamConflict
         case conversationBusy
         case runtimeNotReady
+        /// The runtime refused the start and the server put the message back in its queue.
+        case messageQueued
         case runtimeLoginRequired
         case runtimeDisabled
         case runtimeNotFound
@@ -339,6 +365,7 @@ enum AgentChatAPI {
             case .streamConflict: "That stream belongs to another agent."
             case .conversationBusy: "This agent is busy with another reply."
             case .runtimeNotReady: "The runtime is not ready for a new message yet. Try again in a moment."
+            case .messageQueued: "Your message waits for the turn ahead."
             case .runtimeLoginRequired: "This runtime is not signed in. Sign in to it on the computer running it, or ask an administrator to sign in a cloud runtime from the runtime list."
             case .runtimeDisabled: "This agent's runtime is disabled. Start a new agent on another runtime."
             case .runtimeNotFound: "This runtime is no longer available in this workspace. Start a new agent on another runtime."
@@ -372,6 +399,7 @@ enum AgentChatAPI {
         case "stream_conflict": return .streamConflict
         case "conversation_busy": return .conversationBusy
         case "runtime_not_accepting_message": return .runtimeNotReady
+        case "message_queued": return .messageQueued
         case "runtime_login_required": return .runtimeLoginRequired
         case "runtime_disabled": return .runtimeDisabled
         case "runtime_not_found": return .runtimeNotFound

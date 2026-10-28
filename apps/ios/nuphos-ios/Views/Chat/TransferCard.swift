@@ -82,12 +82,14 @@ struct TransferCard: View {
         } else if file.isImage, let url = file.downloadUrl.flatMap(URL.init(string:)) {
             let shape = RoundedRectangle(cornerRadius: 14, style: .continuous)
             AsyncImage(url: url) { image in
+                // Clipped and outlined before the frame, so they hug the image: a tall
+                // screenshot in the 280 square would otherwise get blank sides.
                 image.resizable().scaledToFit()
-                    .frame(maxWidth: 280, maxHeight: 280)
                     .clipShape(shape)
                     // Screenshots are mostly white; the outline keeps them off the page.
                     .overlay(shape.strokeBorder(Theme.bubble))
                     .overlay { if opening == file.id { ProgressView() } }
+                    .frame(maxWidth: 280, maxHeight: 280, alignment: fromUser ? .trailing : .leading)
             } placeholder: {
                 shape.fill(Theme.bubble).frame(width: 200, height: 140)
             }
