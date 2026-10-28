@@ -256,6 +256,10 @@ struct ConversationView: View {
     /// The composer, with any queued messages above it.
     private var composer: some View {
         VStack(spacing: 0) {
+            if let suggestion = session.promptSuggestion, draft.isEmpty, !session.isStreaming,
+               session.canSubmit, session.failedSubmission == nil {
+                SuggestionChip(text: suggestion) { draft = suggestion }
+            }
             if !session.queued.isEmpty {
                 QueuedStrip(
                     items: session.queued,
@@ -710,6 +714,34 @@ struct ResourceStrip: View {
 }
 
 /// Queued messages waiting for the current reply to finish.
+/// The runtime's guess at the next message. Tapping it fills the composer,
+/// where it can be edited or sent: Desktop's Tab-to-accept, for a phone.
+struct SuggestionChip: View {
+    let text: String
+    var onUse: () -> Void
+
+    var body: some View {
+        HStack {
+            Button(action: onUse) {
+                HStack(spacing: 6) {
+                    Image(systemName: "sparkles").font(Theme.Text.micro)
+                    Text(text).lineLimit(1).font(Theme.Text.label)
+                }
+                .foregroundStyle(Theme.body)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 7)
+                .background(Theme.chatSurface, in: Capsule())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Use suggestion: \(text)")
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 16)
+        .padding(.bottom, 6)
+        .transition(.opacity)
+    }
+}
+
 struct QueuedStrip: View {
     let items: [String]
     var onRemove: (Int) -> Void
