@@ -219,6 +219,7 @@ export function SidebarSectionList({
                               else onSelect(item.key)
                             }}
                             label={item.label}
+                            animateLabel={chatRow}
                             badge={item.badge}
                             trailing={
                               <>

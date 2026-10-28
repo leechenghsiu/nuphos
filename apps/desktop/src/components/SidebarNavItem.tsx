@@ -2,6 +2,7 @@ import { Button as BaseButton } from '@base-ui/react/button'
 import clsx from 'clsx'
 
 import { useHoverMarquee } from '../hooks/useHoverMarquee'
+import { useTextSwap } from '../hooks/useTextSwap'
 
 import type { LucideIcon } from 'lucide-react'
 import type React from 'react'
@@ -46,6 +47,18 @@ type SidebarNavItemProps = {
   comfortable?: boolean
   /** Wait for the click when a press may start a drag instead. */
   navigateOnRelease?: boolean
+  /** Cross-fade the label when it changes in place (e.g. a renamed chat). */
+  animateLabel?: boolean
+}
+
+function SwapLabel({ label }: { label: string }) {
+  const { ref, text } = useTextSwap<HTMLSpanElement>(label)
+
+  return (
+    <span ref={ref} className="t-text-swap">
+      {text}
+    </span>
+  )
 }
 
 /**
@@ -66,6 +79,7 @@ export function SidebarNavItem({
   hoverActions,
   navigateOnRelease = false,
   comfortable = false,
+  animateLabel = false,
 }: SidebarNavItemProps) {
   const { containerRef, start, stop } = useHoverMarquee<HTMLSpanElement>(label)
 
@@ -116,7 +130,7 @@ export function SidebarNavItem({
         {icon}
       </span>
       <span ref={containerRef} className="t-marquee flex-1 min-w-0 text-left">
-        {label}
+        {animateLabel ? <SwapLabel label={label} /> : label}
       </span>
       {badge !== undefined && badge > 0 && (
         <span className="flex-shrink-0 inline-flex items-center justify-center min-w-5 h-5 px-1 rounded-full bg-zViolet-500 text-white text-[11px] font-medium leading-none">
