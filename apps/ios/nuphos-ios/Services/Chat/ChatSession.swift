@@ -414,6 +414,25 @@ final class ChatSession {
     }
 
     var failedSubmission: ComposerSubmission?
+    /// The unsent message the composer takes back for editing.
+    var editingSubmission: ComposerSubmission?
+
+    /// Sends the unsent message again as it was.
+    func retryFailed() {
+        guard let submission = failedSubmission else { return }
+        failedSubmission = nil
+        guard canSubmit else { failedSubmission = submission; return }
+        error = nil
+        send(submission)
+    }
+
+    /// Moves the unsent message back into the composer.
+    func editFailed() {
+        guard let submission = failedSubmission else { return }
+        failedSubmission = nil
+        error = nil
+        editingSubmission = submission
+    }
 
     /// Only restore a request rejected before admission, never a resumed turn.
     /// Left in the transcript, a message the server never stored would ride
@@ -1170,7 +1189,7 @@ final class ChatSession {
                     // Messages here the server never stored: take the server's transcript.
                     rejectUnadmittedSubmission(options.submission)
                     await adoptServerTranscript()
-                    return .failed("This agent changed elsewhere and was reloaded. Send your message again.")
+                    return .failed("This agent changed elsewhere and was reloaded. Retry to send your message.")
                 default:
                     if !accepted && !shouldResume && reconnects == 0 { rejectUnadmittedSubmission(options.submission) }
                     return .failed(conflict.localizedDescription)
