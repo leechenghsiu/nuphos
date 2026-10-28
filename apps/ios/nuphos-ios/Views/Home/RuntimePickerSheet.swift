@@ -232,9 +232,10 @@ struct SelectorAgentRow: View {
     }
     @ViewBuilder private var details: some View {
         if SelectorBox.agentName(runtime) != runtime.providerName { Text(runtime.providerName).font(.system(size: detailSize)).foregroundStyle(Theme.muted) }
-        if runtime.status != .active || runtime.local?.online == false {
-            Text(runtime.tier == .myComputers ? "Offline · open Nuphos on that computer" : "Disabled")
-                .font(.system(size: detailSize)).foregroundStyle(Theme.muted)
+        if runtime.status != .active {
+            Text("Disabled").font(.system(size: detailSize)).foregroundStyle(Theme.muted)
+        } else if runtime.local?.online == false {
+            Text("Offline · open Nuphos on that computer").font(.system(size: detailSize)).foregroundStyle(Theme.muted)
         } else if runtime.local?.signedIn == false || quota?.needsSignIn == true {
             Text("Signed out · sign in on that computer").font(.system(size: detailSize)).foregroundStyle(Theme.muted)
         }
