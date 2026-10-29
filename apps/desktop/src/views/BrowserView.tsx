@@ -13,6 +13,7 @@ import { useEffect, useRef, useState } from 'react'
 import { api } from '../api'
 import { PageMeta } from '../app/pageMeta'
 import { BrowserLoadingProgress } from '../components/BrowserLoadingProgress'
+import { toast } from '../components/ui/toast'
 import { Tooltip } from '../components/ui/tooltip'
 import { useCurrentUser } from '../hooks/useCurrentUser'
 import { useWorkspaceTab } from '../hooks/useWorkspaceTab'
@@ -221,10 +222,10 @@ export function BrowserView({
             <button
               type="button"
               className={clsx(
-                'ml-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-md outline-none focus-visible:ring-2 focus-visible:ring-zViolet-accent disabled:opacity-30',
-                comments.active
-                  ? 'bg-zViolet-accent/15 text-zViolet-accent ring-1 ring-inset ring-zViolet-accent/40 hover:bg-zViolet-accent/25'
-                  : 'text-secondary hover:bg-zGray-800 hover:text-main',
+                buttonClass,
+                'ml-1 outline-none focus-visible:ring-2 focus-visible:ring-zViolet-accent',
+                comments.active &&
+                  '!bg-zViolet-accent/15 !text-zViolet-accent ring-1 ring-inset ring-zViolet-accent/40 hover:!bg-zViolet-accent/25',
               )}
               disabled={!ready}
               onClick={comments.toggle}
@@ -244,7 +245,7 @@ export function BrowserView({
 
                 if (currentUrl && /^https?:\/\//i.test(currentUrl)) {
                   void api.appOpenExternal(currentUrl).catch(() => {
-                    setError('Could not open the external browser')
+                    toast.error('Could not open the external browser')
                   })
                 }
               }}
