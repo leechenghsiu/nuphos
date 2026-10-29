@@ -4,6 +4,7 @@ enum ShareApprovalTests {
     static func run() {
         readsHowATeammateSharesTheirComputer()
         waitsOnlyWhileTheOwnerHasNotApproved()
+        watchesOnlyWhilePending()
         print("Share approval passed")
     }
 
@@ -31,5 +32,12 @@ enum ShareApprovalTests {
         precondition(ShareApprovalWait.pending.message(computer: "Mac").contains("Waiting for the owner of Mac"))
         let answer = try! JSONDecoder().decode(ShareApprovalStatus.self, from: Data(#"{"status":null}"#.utf8))
         precondition(answer.status == nil)
+    }
+
+    private static func watchesOnlyWhilePending() {
+        precondition(ShareApprovalWait.keepsWatching(status: "pending"))
+        precondition(!ShareApprovalWait.keepsWatching(status: "approved"))
+        precondition(!ShareApprovalWait.keepsWatching(status: "denied"))
+        precondition(!ShareApprovalWait.keepsWatching(status: nil))
     }
 }

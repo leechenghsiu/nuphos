@@ -177,12 +177,12 @@ final class ChatSession {
     }
 
     /// Reads where this conversation stands with the owner of the teammate's computer it
-    /// runs on; false once approved, when there is nothing more to watch.
+    /// runs on; false once it is no longer pending, when there is nothing more to watch.
     func refreshShareApproval() async -> Bool {
         guard let answer = try? await NuphosAPI.ownShareApproval(token: token, sessionId: sessionId) else { return true }
         shareApproval = ShareApprovalWait(status: answer.status)
 
-        return answer.status != "approved"
+        return ShareApprovalWait.keepsWatching(status: answer.status)
     }
 
     private var transferPath: String { "agent-sessions/\(sessionId)/teams/\(teamId)/file-transfers" }

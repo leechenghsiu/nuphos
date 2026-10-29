@@ -14,6 +14,12 @@ enum ShareApprovalWait: Equatable, Sendable {
         }
     }
 
+    /// Whether to ask again: only a pending request can still change. Approved, declined and
+    /// never-asked conversations stop, and the next queued send starts watching again.
+    static func keepsWatching(status: String?) -> Bool {
+        status == "pending"
+    }
+
     /// Only a computer that asks its owner first has anything to wait for.
     static func asksOwner(_ runtime: RuntimeInstance?) -> Bool {
         runtime?.local?.shared?.level == "approve"
