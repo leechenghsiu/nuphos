@@ -1,6 +1,5 @@
 import { AppError } from '@/lib/errors'
 
-import { parseLocalRuntimeId } from './local-runtime/address'
 import { getTeamLocalAgentSharing } from './local-share-ceiling'
 import {
   findShareApproval,
@@ -11,6 +10,7 @@ import { isShareTrusted } from './local-share-trust'
 import { LOCAL_SHARE_LEVELS } from './local-share-types'
 import { getAgentDevice, isActiveTeamMember } from './store'
 
+import { parseLocalRuntimeId } from './local-runtime/address'
 
 import type { LocalAgentRef } from './local-runtime/address'
 import type { ShareApproval } from './local-share-store'

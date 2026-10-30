@@ -1,13 +1,13 @@
 import { Hono } from 'hono'
 import { z } from 'zod'
 
-import { agentConversations } from '@/lib/agent/db/shared'
 import {
   deviceAccessDeps,
   memberAccess,
   requireDeviceAccess,
   revokeBoxStreams,
 } from '@/lib/agent/devices/box-access'
+import { agentConversations } from '@/lib/agent/db/shared'
 import { exceedsCeiling, teamShare } from '@/lib/agent/devices/local-share'
 import { getTeamLocalAgentSharing } from '@/lib/agent/devices/local-share-ceiling'
 import {
@@ -15,6 +15,7 @@ import {
   dropShareApprovals,
   findOwnShareApproval,
   listPendingShareApprovals,
+  listPendingShareApprovalsFrom,
   setDeviceShare,
 } from '@/lib/agent/devices/local-share-store'
 import {
@@ -66,6 +67,7 @@ export type DeviceShareRouteDependencies = {
   revokeStreams: (devices: AgentDevice[], actorIds: string[], teamId: string) => Promise<void>
   dropApprovals: typeof dropShareApprovals
   pendingApprovals: (ownerId: string, teamId: string) => Promise<ShareApproval[]>
+  pendingFrom: typeof listPendingShareApprovalsFrom
   decide: typeof decideShareApproval
   ownApproval: typeof findOwnShareApproval
   settleQueue: (approval: ShareApproval) => Promise<void>
@@ -98,6 +100,7 @@ const defaultDependencies: DeviceShareRouteDependencies = {
   revokeStreams: revokeBoxStreams,
   dropApprovals: dropShareApprovals,
   pendingApprovals: listPendingShareApprovals,
+  pendingFrom: listPendingShareApprovalsFrom,
   decide: decideShareApproval,
   ownApproval: findOwnShareApproval,
   settleQueue: settleShareApprovalQueue,
@@ -176,6 +179,8 @@ export function createDeviceShareRoutes(deps: DeviceShareRouteDependencies = def
         await deps.dropApprovals(userId, device.deviceId, teamId, lost)
         await deps.dropTrusts(userId, device.deviceId, teamId, lost)
       }
+      // Trust only means something at "Ask me first"; leaving it forgets it, so none comes back later.
+      if (share?.level !== 'approve') await deps.dropTrusts(userId, device.deviceId, teamId)
 
       return c.json({ share: share ?? OFF, ceiling })
     },
@@ -232,8 +237,12 @@ export function createDeviceShareRoutes(deps: DeviceShareRouteDependencies = def
 
         await deps.trust({ ownerId: userId, deviceId, teamId, actorId, duration: trust })
         // Trusted now, so their other conversations waiting on this computer go too.
-        for (const other of await deps.pendingApprovals(userId, teamId)) {
-          if (other.deviceId !== deviceId || other.actorId !== actorId) continue
+        for (const other of await deps.pendingFrom({
+          ownerId: userId,
+          deviceId,
+          teamId,
+          actorId,
+        })) {
           const approved = await deps.decide(userId, other._id, true)
 
           if (approved) answered.push(approved)
@@ -241,11 +250,9 @@ export function createDeviceShareRoutes(deps: DeviceShareRouteDependencies = def
       }
       // The answer stands even when the waiting sends cannot be settled now; the queue sweep retries.
       for (const approval of answered)
-        await deps
-          .settleQueue(approval)
-          .catch((error: unknown) =>
-            { logError('agent.share_approval.settle_failed', error, { approval_id: approval._id }); },
-          )
+        await deps.settleQueue(approval).catch((error: unknown) => {
+          logError('agent.share_approval.settle_failed', error, { approval_id: approval._id })
+        })
 
       return c.json({ id: decided._id, status: decided.status })
     },

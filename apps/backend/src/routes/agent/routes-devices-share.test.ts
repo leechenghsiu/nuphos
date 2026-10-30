@@ -77,20 +77,26 @@ function app(options: { device?: AgentDevice; ceiling?: LocalShareLevel; userId?
             requestedAt: new Date(0),
           }
         : null,
+    pendingFrom: async ({ actorId, deviceId }) =>
+      actorId === 'mate' && deviceId === 'mac'
+        ? [
+            {
+              _id: 'waiting',
+              ownerId: 'owner',
+              deviceId: 'mac',
+              teamId: TEAM,
+              sessionId: 's2',
+              actorId: 'mate',
+              status: 'pending',
+              requestedAt: new Date(0),
+            },
+          ]
+        : [],
     settleQueue: async (approval) => {
       calls.push({ settled: `${approval.sessionId}:${approval.status}` })
     },
     trust: async ({ actorId, deviceId, duration }) => {
       calls.push({ trusted: `${actorId}@${deviceId}:${duration}` })
-
-      return {
-        _id: 't',
-        ownerId: 'owner',
-        deviceId,
-        teamId: TEAM,
-        actorId,
-        createdAt: new Date(0),
-      }
     },
     listTrusts: async () => [
       {
@@ -324,4 +330,15 @@ test('teammates who lose the share lose the trust too', async () => {
     body: JSON.stringify({ level: 'approve', everyone: false, userIds: ['mate'] }),
   })
   expect(calls).toContainEqual({ untrusted: ['other'] })
+})
+
+test('leaving “Ask me first” forgets every trust on the computer', async () => {
+  const { server, calls } = app({ ceiling: 'full' })
+
+  await server.request(`/devices/mac/share?teamId=${TEAM}`, {
+    method: 'PUT',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ level: 'full', everyone: true, userIds: [] }),
+  })
+  expect(calls.some((call) => 'untrusted' in call && call.untrusted === undefined)).toBe(true)
 })

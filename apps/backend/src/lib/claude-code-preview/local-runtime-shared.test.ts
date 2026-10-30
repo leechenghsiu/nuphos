@@ -1,7 +1,5 @@
 import { describe, expect, test } from 'bun:test'
 
-import { localRuntimeId, parseLocalRuntimeUrl } from '@/lib/agent/devices/local-runtime/address'
-import { localRuntimeStatusSchema } from '@/lib/agent/devices/local-runtime/protocol'
 import {
   awaitsShareApproval,
   capShareLevel,
@@ -9,18 +7,20 @@ import {
   isUnattendedSource,
   sharedLevelFor,
 } from '@/lib/agent/devices/local-share'
+import { localRuntimeId, parseLocalRuntimeUrl } from '@/lib/agent/devices/local-runtime/address'
+import { localRuntimeStatusSchema } from '@/lib/agent/devices/local-runtime/protocol'
 
 import { sharedRuntimeUse } from './conversation-chat-route'
 import { listOwnLocalRuntimes, resolveLocalRuntimeEndpoint } from './local-runtime-catalog'
 import { acceptsRuntimeInstance } from './runtime-catalog'
 import { requireModelRuntimeInstance } from './runtime-models'
 
-import type { LocalRuntimeCatalogDeps } from './local-runtime-catalog'
-import type { RuntimeInstance } from './runtime-instances'
 import type { LocalShareDeps } from '@/lib/agent/devices/local-share'
 import type { ShareApproval } from '@/lib/agent/devices/local-share-store'
 import type { LocalAgentShare, LocalShareLevel } from '@/lib/agent/devices/local-share-types'
 import type { AgentDevice } from '@/lib/agent/devices/store'
+import type { LocalRuntimeCatalogDeps } from './local-runtime-catalog'
+import type { RuntimeInstance } from './runtime-instances'
 
 const computer = (shares?: LocalAgentShare[], box = false): AgentDevice => ({
   userId: 'owner',

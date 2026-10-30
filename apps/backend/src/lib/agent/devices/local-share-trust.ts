@@ -50,20 +50,19 @@ type TrustKey = { ownerId: string; deviceId: string; teamId: string; actorId: st
 export async function trustTeammate(
   key: TrustKey & { duration: ShareTrustDuration },
   now: Date = new Date(),
-): Promise<ShareTrust> {
+): Promise<void> {
   const { duration, ...match } = key
   const expiresAt = shareTrustExpiry(duration, now)
-  const trust = await shareTrusts().findOneAndUpdate(
+
+  await shareTrusts().updateOne(
     match,
     {
       $set: { createdAt: now, ...(expiresAt ? { expiresAt } : {}) },
       ...(expiresAt ? {} : { $unset: { expiresAt: '' as const } }),
       $setOnInsert: { _id: randomUUID() },
     },
-    { upsert: true, returnDocument: 'after' },
+    { upsert: true },
   )
-
-  return trust ?? { _id: '', ...match, createdAt: now, ...(expiresAt ? { expiresAt } : {}) }
 }
 
 /** The expiry index sweeps about once a minute, so an expired trust is checked here too. */
