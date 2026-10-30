@@ -1,13 +1,13 @@
 import { Hono } from 'hono'
 import { z } from 'zod'
 
+import { agentConversations } from '@/lib/agent/db/shared'
 import {
   deviceAccessDeps,
   memberAccess,
   requireDeviceAccess,
   revokeBoxStreams,
 } from '@/lib/agent/devices/box-access'
-import { agentConversations } from '@/lib/agent/db/shared'
 import { exceedsCeiling, teamShare } from '@/lib/agent/devices/local-share'
 import { getTeamLocalAgentSharing } from '@/lib/agent/devices/local-share-ceiling'
 import {
@@ -17,6 +17,12 @@ import {
   listPendingShareApprovals,
   setDeviceShare,
 } from '@/lib/agent/devices/local-share-store'
+import {
+  SHARE_TRUST_DURATIONS,
+  dropShareTrusts,
+  listShareTrusts,
+  trustTeammate,
+} from '@/lib/agent/devices/local-share-trust'
 import { LOCAL_SHARE_LEVELS } from '@/lib/agent/devices/local-share-types'
 import { getAgentDevice, isActiveTeamMember } from '@/lib/agent/devices/store'
 import { AppError } from '@/lib/errors'
@@ -42,7 +48,12 @@ const shareSchema = z.object({
   everyone: z.boolean(),
   userIds: z.array(z.string().trim().min(1).max(64)).max(500),
 })
-const decisionSchema = z.object({ approve: z.boolean() })
+// Approving can also trust the teammate on this computer, so their next conversations run unasked.
+const decisionSchema = z.object({
+  approve: z.boolean(),
+  trust: z.enum(SHARE_TRUST_DURATIONS).optional(),
+})
+const trustParam = deviceParam.extend({ actorId: z.string().trim().min(1).max(64) })
 const ownApprovalQuery = z.object({ sessionId: z.string().trim().min(1).max(128) })
 
 export type DeviceShareRouteDependencies = {
@@ -58,6 +69,9 @@ export type DeviceShareRouteDependencies = {
   decide: typeof decideShareApproval
   ownApproval: typeof findOwnShareApproval
   settleQueue: (approval: ShareApproval) => Promise<void>
+  trust: typeof trustTeammate
+  listTrusts: typeof listShareTrusts
+  dropTrusts: typeof dropShareTrusts
   conversationTitles: (sessionIds: string[]) => Promise<Map<string, string>>
 }
 
@@ -87,6 +101,9 @@ const defaultDependencies: DeviceShareRouteDependencies = {
   decide: decideShareApproval,
   ownApproval: findOwnShareApproval,
   settleQueue: settleShareApprovalQueue,
+  trust: trustTeammate,
+  listTrusts: listShareTrusts,
+  dropTrusts: dropShareTrusts,
   conversationTitles: getConversationTitles,
 }
 
@@ -157,6 +174,7 @@ export function createDeviceShareRoutes(deps: DeviceShareRouteDependencies = def
       if (lost.length) {
         await deps.revokeStreams([device], lost, teamId)
         await deps.dropApprovals(userId, device.deviceId, teamId, lost)
+        await deps.dropTrusts(userId, device.deviceId, teamId, lost)
       }
 
       return c.json({ share: share ?? OFF, ceiling })
@@ -201,24 +219,65 @@ export function createDeviceShareRoutes(deps: DeviceShareRouteDependencies = def
     zv('param', approvalParam),
     zv('json', decisionSchema),
     async (c) => {
-      const decided = await deps.decide(
-        c.get('userId'),
-        c.req.valid('param').approvalId,
-        c.req.valid('json').approve,
-      )
+      const userId = c.get('userId')
+      const { approve, trust } = c.req.valid('json')
+      const decided = await deps.decide(userId, c.req.valid('param').approvalId, approve)
 
       if (!decided)
         throw new AppError(404, 'approval_not_found', 'This request was already answered')
+      const answered = [decided]
+
+      if (decided.status === 'approved' && trust) {
+        const { deviceId, teamId, actorId } = decided
+
+        await deps.trust({ ownerId: userId, deviceId, teamId, actorId, duration: trust })
+        // Trusted now, so their other conversations waiting on this computer go too.
+        for (const other of await deps.pendingApprovals(userId, teamId)) {
+          if (other.deviceId !== deviceId || other.actorId !== actorId) continue
+          const approved = await deps.decide(userId, other._id, true)
+
+          if (approved) answered.push(approved)
+        }
+      }
       // The answer stands even when the waiting sends cannot be settled now; the queue sweep retries.
-      await deps
-        .settleQueue(decided)
-        .catch((error: unknown) =>
-          logError('agent.share_approval.settle_failed', error, { approval_id: decided._id }),
-        )
+      for (const approval of answered)
+        await deps
+          .settleQueue(approval)
+          .catch((error: unknown) =>
+            { logError('agent.share_approval.settle_failed', error, { approval_id: approval._id }); },
+          )
 
       return c.json({ id: decided._id, status: decided.status })
     },
   )
+
+  // Teammates the owner trusts on their computer, and taking that back.
+  routes.get('/devices/:deviceId/share-trusts', zv('param', deviceParam), async (c) => {
+    const userId = c.get('userId')
+    const { device, teamId } = await ownComputer(
+      userId,
+      readTeamIdCandidate(c),
+      c.req.valid('param').deviceId,
+    )
+    const trusts = await deps.listTrusts(userId, device.deviceId, teamId)
+
+    return c.json({
+      trusts: trusts.map((trust) => ({
+        actorId: trust.actorId,
+        expiresAt: trust.expiresAt?.toISOString() ?? null,
+      })),
+    })
+  })
+
+  routes.delete('/devices/:deviceId/share-trusts/:actorId', zv('param', trustParam), async (c) => {
+    const userId = c.get('userId')
+    const { deviceId, actorId } = c.req.valid('param')
+    const { device, teamId } = await ownComputer(userId, readTeamIdCandidate(c), deviceId)
+
+    await deps.dropTrusts(userId, device.deviceId, teamId, [actorId])
+
+    return c.json({ ok: true })
+  })
 
   return routes
 }

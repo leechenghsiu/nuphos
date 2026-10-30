@@ -1,5 +1,7 @@
 import { describe, expect, test } from 'bun:test'
 
+import { localRuntimeId, parseLocalRuntimeUrl } from '@/lib/agent/devices/local-runtime/address'
+import { localRuntimeStatusSchema } from '@/lib/agent/devices/local-runtime/protocol'
 import {
   awaitsShareApproval,
   capShareLevel,
@@ -7,20 +9,18 @@ import {
   isUnattendedSource,
   sharedLevelFor,
 } from '@/lib/agent/devices/local-share'
-import { localRuntimeId, parseLocalRuntimeUrl } from '@/lib/agent/devices/local-runtime/address'
-import { localRuntimeStatusSchema } from '@/lib/agent/devices/local-runtime/protocol'
 
 import { sharedRuntimeUse } from './conversation-chat-route'
 import { listOwnLocalRuntimes, resolveLocalRuntimeEndpoint } from './local-runtime-catalog'
 import { acceptsRuntimeInstance } from './runtime-catalog'
 import { requireModelRuntimeInstance } from './runtime-models'
 
+import type { LocalRuntimeCatalogDeps } from './local-runtime-catalog'
+import type { RuntimeInstance } from './runtime-instances'
 import type { LocalShareDeps } from '@/lib/agent/devices/local-share'
 import type { ShareApproval } from '@/lib/agent/devices/local-share-store'
 import type { LocalAgentShare, LocalShareLevel } from '@/lib/agent/devices/local-share-types'
 import type { AgentDevice } from '@/lib/agent/devices/store'
-import type { LocalRuntimeCatalogDeps } from './local-runtime-catalog'
-import type { RuntimeInstance } from './runtime-instances'
 
 const computer = (shares?: LocalAgentShare[], box = false): AgentDevice => ({
   userId: 'owner',
@@ -53,6 +53,7 @@ function setup(options: {
   device: AgentDevice
   ceiling?: LocalShareLevel
   approval?: ShareApproval['status']
+  trusted?: boolean
   members?: string[]
 }) {
   const requested: string[] = []
@@ -70,6 +71,7 @@ function setup(options: {
     requestApproval: async ({ sessionId }) => {
       requested.push(sessionId)
     },
+    isTrusted: async () => options.trusted ?? false,
   }
   const deps: LocalRuntimeCatalogDeps = {
     access: {
@@ -219,6 +221,31 @@ describe('a teammate’s conversation on a shared computer', () => {
 
     await expect(
       resolveLocalRuntimeEndpoint('team', id, 'mate', 'transport', denied.deps, {
+        sessionId: 's1',
+      }),
+    ).rejects.toMatchObject({ code: 'local_share_denied' })
+  })
+
+  test('a teammate the owner trusts runs without asking, unless this conversation was declined', async () => {
+    const trusted = setup({ device: computer([share('approve')]), trusted: true })
+
+    expect(
+      (
+        await resolveLocalRuntimeEndpoint('team', id, 'mate', 'transport', trusted.deps, {
+          sessionId: 's1',
+        })
+      ).runtimeId,
+    ).toBe(id)
+    expect(trusted.requested).toEqual([])
+
+    const declined = setup({
+      device: computer([share('approve')]),
+      trusted: true,
+      approval: 'denied',
+    })
+
+    await expect(
+      resolveLocalRuntimeEndpoint('team', id, 'mate', 'transport', declined.deps, {
         sessionId: 's1',
       }),
     ).rejects.toMatchObject({ code: 'local_share_denied' })
