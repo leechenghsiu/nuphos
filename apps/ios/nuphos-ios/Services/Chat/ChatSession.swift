@@ -1185,12 +1185,17 @@ final class ChatSession {
                     try? await Task.sleep(for: backoff(gatewayRetries, base: 0.7, max: 5))
                     if !isNativeRuntime && !options.explicitResume { forceFresh = true; resumeFrom = 0 } else { reconnects += 1 }
                     continue
+                // The runtime refused the start and the server put the message back
+                // in its queue: it was not refused, so it is not a failed send.
+                case .other(let code, _, _) where code == "message_queued":
+                    return .queued
                 case .other(let code, _, _) where code == "invalid_message_batch" && !accepted:
                     // Messages here the server never stored: take the server's transcript.
                     rejectUnadmittedSubmission(options.submission)
                     await adoptServerTranscript()
                     return .failed("This agent changed elsewhere and was reloaded. Retry to send your message.")
                 default:
+                    // Only a send the server refused, never one it queued or already runs.
                     if !accepted && !shouldResume && reconnects == 0 { rejectUnadmittedSubmission(options.submission) }
                     return .failed(conflict.localizedDescription)
                 }
