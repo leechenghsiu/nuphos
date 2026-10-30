@@ -1,5 +1,3 @@
-The Live Activity now shows the same status as the app. A conversation no longer shows as Failed while its agent is still working, and a runtime that can't be reached shows as Unavailable.
+A finished reply now folds all of its work under one quiet "Worked for" line, instead of a gray pill that could repeat several times in one turn.
 
-Conversations opened from a link or a notification now load instead of showing "cancelled".
-
-Chat text no longer overlaps for a moment when you rotate your iPhone.
+When an agent messages or starts another agent, the chat shows it as a single line, in line with the rest of the work log, instead of a separate card.
