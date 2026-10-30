@@ -1,7 +1,3 @@
-One Live Activity now shows your running conversations together, instead of one per conversation.
+A finished reply now folds all of its work under one quiet "Worked for" line, instead of a gray pill that could repeat several times in one turn.
 
-A new Runtimes page shows your cloud runtimes, Boxes and computers in one place. It takes the place of the Monitoring and Triggers placeholders.
-
-Nuphos has a new app icon, and you can choose from 16 icons in Account › Appearance › App icon.
-
-Screenshots you paste into the composer are now attached to your message.
+When an agent messages or starts another agent, the chat shows it as a single line, in line with the rest of the work log, instead of a separate card.
