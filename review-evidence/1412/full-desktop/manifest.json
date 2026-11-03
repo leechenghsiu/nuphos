@@ -1,0 +1,16 @@
+{
+  "beforeSource": "2b014f124f3f68f6386d28353774cf612be2abd7",
+  "afterSource": "6041be7639acbf50f824a0bc120e041082cff5fb",
+  "runtime": "Electron 43.5.0 darwin-arm64",
+  "method": "Unmodified full Desktop renderer built with Vite, navigated in a temporary Electron BrowserWindow. Synthetic preload API, account, team, conversation and devices. External requests blocked; separate temporary userData. Not the production Electron main/preload, installed release, live backend, provider login or authorization E2E. Move confirmation captured but not executed. English light theme. Some avatar assets are unavailable under the file URL harness.",
+  "sha256": {
+    "before-personal-share.png": "5bd029569660d181792ee3052c960a7187efaef8b39a6daed111319eaa100196",
+    "before-box-access.png": "04ed40df3ad30a1785c54369b0d1225abc5e6e5b5e3e583a37987c936bacbc30",
+    "before-new-chat-disclosure.png": "98f44ba9e4f08098566f184bf7d7cd8a892f9e236164c0637f3a15a9ce643ae3",
+    "before-move-warning.png": "37947b601658b1b838a75c355e5b9e5c789c1e86b7c1c3c42d6d386d8ca0c5b9",
+    "after-personal-share.png": "410f20bb4f88f85625b6ff3a961f7da4125939e55dfe24c4b312af6a50459a01",
+    "after-box-access.png": "8a127da1f79b8ddca7753c4a12abc0355d444cf5b880539ef8249071aeedf4b1",
+    "after-new-chat-disclosure.png": "228d339db137ab596d558f8c87b2ab9bfa05ffabaf1e18e2d26853d19dd0ea1a",
+    "after-move-warning.png": "4dac63c49e54dd6b2c04def50eeb92a251a005d1af87cc987ad98311b075e550"
+  }
+}
