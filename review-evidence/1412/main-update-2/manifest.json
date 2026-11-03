@@ -1,0 +1,20 @@
+{
+  "sourceHead": "2f59066a4293a60dec55b0f05dd3ed24ffff95f1",
+  "baseMain": "61f670571dc13bfd384cb5dc8590b4639c297f37",
+  "environment": "Full Vite-built Desktop renderer in Electron 43.5.0 with synthetic preload IPC, fake data, isolated profile and blocked external requests. Not production main/preload or live backend E2E.",
+  "checks": [
+    "Learn more exact appOpenExternal URL",
+    "Owned and managed Box dispatch without prompt",
+    "Own non-Box Local Agent collaboration-loss consent without host-trust text"
+  ],
+  "files": {
+    "after-box-access.png": "6c4aa739091fc5d5fcc01a0bdbb2e01364b9d36f9f01f272b7ca46855718a7f0",
+    "after-manager-no-warning.png": "8164517795ac94479bf6e61debff64120e40a9c36a86f61face6d95183f7c6a4",
+    "after-manager-picker.png": "fae1a95c4c8e79aa77e33694dd9d1ba5ad568a09a1271b831ac958bc4b3f89f9",
+    "after-move-warning.png": "798355144204e5f111d045d3887f57d1df6e81fe8ae41c33f49c3031d612ab49",
+    "after-new-chat-disclosure.png": "117c899e7d378976830044c3d465f7435c256f302bf63236c4588474426b7119",
+    "after-own-local-collaboration-warning.png": "51d86762323c7ef713726df14628b68ea52d31005e47cc946b1a1ecaad3d9609",
+    "after-owner-no-warning.png": "8164517795ac94479bf6e61debff64120e40a9c36a86f61face6d95183f7c6a4",
+    "after-personal-share.png": "0110ecd000ecace058ea54dffb4969ffd912a86cfb29e038b179a022e048d64f"
+  }
+}
