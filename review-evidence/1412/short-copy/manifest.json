@@ -1,0 +1,24 @@
+{
+  "beforeSource": "6041be7639acbf50f824a0bc120e041082cff5fb",
+  "afterSource": "ff7388ecce15ebbfcffd61fbe66343f1823c4eb4",
+  "method": "Full Vite-built Desktop renderer in isolated Electron 43.5.0 harness; synthetic preload API and data; external requests blocked. Before images reuse the previous head captures (light); new after images use dark theme. Not production main/preload, installed-release or live-backend E2E. Missing avatars are a file-URL harness limitation.",
+  "checks": [
+    "Learn more called appOpenExternal with the repository main docs URL (no actual navigation)",
+    "Owner move selection dispatched to synthetic API without alertdialog",
+    "Manager move selection dispatched to synthetic API without alertdialog",
+    "Borrowed move warning opened but canceled"
+  ],
+  "sha256": {
+    "before-personal-share.png": "410f20bb4f88f85625b6ff3a961f7da4125939e55dfe24c4b312af6a50459a01",
+    "before-box-access.png": "8a127da1f79b8ddca7753c4a12abc0355d444cf5b880539ef8249071aeedf4b1",
+    "before-new-chat-disclosure.png": "228d339db137ab596d558f8c87b2ab9bfa05ffabaf1e18e2d26853d19dd0ea1a",
+    "before-move-warning.png": "4dac63c49e54dd6b2c04def50eeb92a251a005d1af87cc987ad98311b075e550",
+    "after-personal-share.png": "9cfaa818cb3bb80222a4b6eb34c49f7076afb69c814a7e9e1910183704276120",
+    "after-box-access.png": "d7b419860881b4085649a46ffa9aba52adc6451ec297d790b877933612f48c46",
+    "after-new-chat-disclosure.png": "7257487300d6f092f4c1185f9c9ca82ad2235b44b09275d3b0f013c1b2fcf1f7",
+    "after-move-warning.png": "829b02910d8c9cf970c418c994f4375eddb891b34c497d57459f435d589f3aad",
+    "after-owner-no-warning.png": "2c1610f6a43f587fd7bd311568674470a1bcb0e9fd6a7fc4f985df8a7aca7818",
+    "after-manager-picker.png": "d43d526f8d5909df4dd83d7ea487b860f00d2256fa8802ad51efef58b55a739e",
+    "after-manager-no-warning.png": "2c1610f6a43f587fd7bd311568674470a1bcb0e9fd6a7fc4f985df8a7aca7818"
+  }
+}
