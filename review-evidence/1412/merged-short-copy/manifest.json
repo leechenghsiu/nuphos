@@ -1,0 +1,25 @@
+{
+  "beforeSource": "6041be7639acbf50f824a0bc120e041082cff5fb",
+  "afterSource": "dd9d4255b19ed5191e20f89f037e615adcb8dfbb",
+  "upstreamMerged": "ad1d2d33eaca99e2ff3b3f766cf64e04e14d88cb",
+  "method": "Full Vite-built Desktop renderer in isolated Electron 43.5.0 harness with synthetic IPC/data and blocked external requests. Before images are earlier light-theme captures; after images are current dark-theme captures. Not production main/preload, installed-release or live-backend authorization E2E. Missing avatars are a file-URL harness limitation.",
+  "checks": [
+    "Exact Learn more target asserted through synthetic appOpenExternal",
+    "Owner and manager move requests reached synthetic API with no alertdialog",
+    "Borrowed move warning opened then canceled",
+    "Upstream shared-owner labels remain visible"
+  ],
+  "sha256": {
+    "before-personal-share.png": "410f20bb4f88f85625b6ff3a961f7da4125939e55dfe24c4b312af6a50459a01",
+    "before-box-access.png": "8a127da1f79b8ddca7753c4a12abc0355d444cf5b880539ef8249071aeedf4b1",
+    "before-new-chat-disclosure.png": "228d339db137ab596d558f8c87b2ab9bfa05ffabaf1e18e2d26853d19dd0ea1a",
+    "before-move-warning.png": "4dac63c49e54dd6b2c04def50eeb92a251a005d1af87cc987ad98311b075e550",
+    "after-personal-share.png": "b703032737dc0c1ec8071711a864441359e20c59ebe0530bb377d6585856629b",
+    "after-box-access.png": "4397c11f8b45eba92f657259ae4674029b55115ca404c3fa08be423023323398",
+    "after-new-chat-disclosure.png": "56b372d4897c3c707a525b88600b75842a27db8d4d8139a8750d5e3e0d883fcc",
+    "after-move-warning.png": "978e23b35279e8f14f3df30df08871300b31a52f03feff0759dc992e55ef258e",
+    "after-owner-no-warning.png": "24f933eab4dd42c81dcb17b9b144babfc4dada2b70d5c6ea38c5855075f915aa",
+    "after-manager-picker.png": "c909ed2870bf4deca49f21e36217d2492bae7dd778bde46c44e0878f65dd0a64",
+    "after-manager-no-warning.png": "201d9c1e0ce0152d8302b63041e66954b18023909799964aa62ccedc31853990"
+  }
+}
