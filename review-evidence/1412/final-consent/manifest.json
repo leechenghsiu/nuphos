@@ -1,0 +1,26 @@
+{
+  "beforeSource": "6041be7639acbf50f824a0bc120e041082cff5fb",
+  "afterSource": "58a3bd904bfdaa2793cda8aa631e9d591174d309",
+  "method": "Full Vite-built Desktop renderer in isolated Electron 43.5.0 harness; synthetic preload API/data; blocked external requests. Before captures reused from prior light-theme head; after captures are current dark theme. Not production main/preload, installed release or live-backend/provider E2E. Missing avatars are a file-URL harness limitation.",
+  "checks": [
+    "Learn more exact external URL asserted",
+    "Owned and managed Box selections dispatched to synthetic move API without an alertdialog",
+    "Owned non-Box Local Agent still asks before losing collaboration, with no host-trust sentence or docs link",
+    "Borrowed computer uses a short host-trust/conversation-owner notice; canceled without dispatch",
+    "Upstream owner labels retained"
+  ],
+  "sha256": {
+    "before-personal-share.png": "410f20bb4f88f85625b6ff3a961f7da4125939e55dfe24c4b312af6a50459a01",
+    "before-box-access.png": "8a127da1f79b8ddca7753c4a12abc0355d444cf5b880539ef8249071aeedf4b1",
+    "before-new-chat-disclosure.png": "228d339db137ab596d558f8c87b2ab9bfa05ffabaf1e18e2d26853d19dd0ea1a",
+    "before-move-warning.png": "4dac63c49e54dd6b2c04def50eeb92a251a005d1af87cc987ad98311b075e550",
+    "after-personal-share.png": "079c012b59c565a0b33336c96659d5de8a04a0d430846e1109ab91650e54b3a0",
+    "after-box-access.png": "abb78bc4b2c13f4079292ab36539555069d9084a30dd1761746093137175f70e",
+    "after-new-chat-disclosure.png": "46399b71b6362fe13e993d4f612a9fc593d5a4bd0d34a57cf4a2c706df8ed0b2",
+    "after-move-warning.png": "1e4fef543eb62292d30bc7bfd4a430715ae8794274744e1a724e10a5f2d67fa1",
+    "after-owner-no-warning.png": "2a77088d4412f9b68d80e96145a3f3dc269a398cef0b95c8c2c50dc8c33586ef",
+    "after-manager-picker.png": "0b8e6ee0032ccc607f642627de2bb6fa8b1666f7fa26a26e204754d728b7d7c9",
+    "after-manager-no-warning.png": "2a77088d4412f9b68d80e96145a3f3dc269a398cef0b95c8c2c50dc8c33586ef",
+    "after-own-local-collaboration-warning.png": "d006a1871df3be94d37241e78789553590d969eefb4307389516b80f48b47568"
+  }
+}
