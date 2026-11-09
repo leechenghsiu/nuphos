@@ -3,7 +3,8 @@ import { useState } from 'react'
 
 import { SESSION_DRAG_TYPE } from '../../app/workspace/splitLayout'
 
-import { MAKE_BOT_DRAG_TYPE, MAKE_TASK_DRAG_TYPE, setRowDragImage } from './bot-drop'
+import { MAKE_BOT_DRAG_TYPE, MAKE_TASK_DRAG_TYPE } from './bot-drop'
+import { setRowDragImage } from './rowDragImage'
 
 import type { Item } from './types'
 import type { HTMLAttributes, MouseEvent } from 'react'
