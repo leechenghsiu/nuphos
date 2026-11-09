@@ -37,6 +37,35 @@ const TARGETS = {
  * group shows where to drop; over it, it lights up. Other groups render as a
  * plain wrapper.
  */
+/**
+ * A row being dragged follows the pointer as a small card, its face over its
+ * name, instead of the browser's faded snapshot of the whole row.
+ */
+export function setRowDragImage(
+  event: { dataTransfer: DataTransfer | null },
+  row: HTMLElement,
+  label: string,
+) {
+  const card = document.createElement('div')
+
+  card.className =
+    'fixed -left-[999px] top-0 flex w-[112px] flex-col items-center gap-1.5 rounded-xl border border-line-control bg-elevated px-3 py-2.5 shadow-lg'
+  const icon = row.querySelector('button > span')?.cloneNode(true)
+
+  if (icon instanceof HTMLElement) {
+    icon.className = 'flex size-9 items-center justify-center [&>*]:!size-9 [&_svg]:!size-5'
+    card.appendChild(icon)
+  }
+  const name = document.createElement('div')
+
+  name.className = 'max-w-full truncate text-[12px] font-medium text-main'
+  name.textContent = label
+  card.appendChild(name)
+  document.body.appendChild(card)
+  event.dataTransfer?.setDragImage(card, 56, 24)
+  requestAnimationFrame(() => card.remove())
+}
+
 export function ChatGroupDropZone({
   target,
   teamId,
@@ -46,7 +75,8 @@ export function ChatGroupDropZone({
   target: keyof typeof TARGETS | null
   teamId: string
   className?: string
-  children: ReactNode
+  /** Renders the group; `slot` is where the drop hint opens, under the group's title. */
+  children: (slot: ReactNode) => ReactNode
 }) {
   const [dragging, setDragging] = useState(false)
   const [over, setOver] = useState(false)
@@ -74,17 +104,11 @@ export function ChatGroupDropZone({
     }
   }, [type])
 
-  if (!spec) return <div className={className}>{children}</div>
+  if (!spec) return <div className={className}>{children(null)}</div>
 
   return (
     <div
-      className={clsx(
-        className,
-        'relative rounded-xl -outline-offset-1 transition-colors duration-150',
-        // A dashed edge says where the row can go; over it, the edge firms up and the group fills.
-        dragging && !over && 'outline-dashed outline-1 outline-line-control',
-        over && 'bg-state-hover outline outline-1 outline-line-focus',
-      )}
+      className={className}
       onDragOver={(event) => {
         if (!event.dataTransfer.types.includes(spec.type)) return
         event.preventDefault()
@@ -105,11 +129,23 @@ export function ChatGroupDropZone({
         spec.drop(teamId, sessionId)
       }}
     >
-      {children}
-      {dragging && (
-        <div className="pointer-events-none px-2 pb-1.5 pt-1 text-[12.5px] text-tertiary">
-          {spec.hint()}
-        </div>
+      {children(
+        // Opens under the title as the drag starts and closes when it ends, so
+        // the rows below slide rather than jump; over it, the dashed edge firms up.
+        <div className="t-collapse" data-open={dragging ? 'true' : 'false'}>
+          <div className="t-collapse-inner">
+            <div
+              className={clsx(
+                'mx-0.5 mb-1.5 mt-1 flex h-12 items-center justify-center rounded-xl border text-[12.5px] transition-colors duration-150',
+                over
+                  ? 'border-line-focus bg-state-hover text-secondary'
+                  : 'border-dashed border-line-control text-tertiary',
+              )}
+            >
+              {spec.hint()}
+            </div>
+          </div>
+        </div>,
       )}
     </div>
   )
