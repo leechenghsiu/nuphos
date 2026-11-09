@@ -55,10 +55,10 @@ export function BotDropZone({
     <div
       className={clsx(
         className,
-        'relative rounded-xl transition-[background-color,box-shadow] duration-150',
-        dragging && 'shadow-[inset_0_0_0_1px_var(--sidebar-overlay-active)]',
-        over &&
-          'bg-[var(--sidebar-overlay-hover)] shadow-[inset_0_0_0_1.5px_rgb(var(--color-line-focus))]',
+        'relative rounded-xl -outline-offset-1 transition-colors duration-150',
+        // A dashed edge says where a Task can go; over it, the edge firms up and the group fills.
+        dragging && !over && 'outline-dashed outline-1 outline-line-control',
+        over && 'bg-state-hover outline outline-1 outline-line-focus',
       )}
       onDragOver={(event) => {
         if (!event.dataTransfer.types.includes(MAKE_BOT_DRAG_TYPE)) return
