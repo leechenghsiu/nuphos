@@ -1,9 +1,8 @@
 import clsx from 'clsx'
-import { useState } from 'react'
 
 import { SESSION_DRAG_TYPE } from '../../app/workspace/splitLayout'
 
-import { MAKE_BOT_DRAG_TYPE, MAKE_TASK_DRAG_TYPE } from './bot-drop'
+import { MAKE_BOT_DRAG_TYPE } from './bot-drop'
 import { setRowDragImage } from './rowDragImage'
 
 import type { Item } from './types'
@@ -31,8 +30,6 @@ export function SessionRowSurface({
   revealDetail = false,
   ...props
 }: Props) {
-  // The row stays in place, faded, while its card is dragged.
-  const [dragging, setDragging] = useState(false)
   const activate = (event: MouseEvent) => {
     if (!item.description || !item.enabled || event.button !== 0) return
     if ((event.target as HTMLElement).closest('button')) return
@@ -49,21 +46,16 @@ export function SessionRowSurface({
       draggable={Boolean(sessionId)}
       onDragStart={(event) => {
         if (!sessionId) return
-        event.dataTransfer.effectAllowed = 'move'
+        // Moving opens it in a split; copying onto Bots makes it a Bot and keeps the Task.
+        event.dataTransfer.effectAllowed = 'copyMove'
         setRowDragImage(event, event.currentTarget, item.label)
-        setDragging(true)
         event.dataTransfer.setData(SESSION_DRAG_TYPE, JSON.stringify({ sessionId, teamId }))
         // A Task can also be dropped on Bots to become one, as its menu's "Make this a Bot".
         if (item.task && !item.bot && !item.readOnlyChat)
           event.dataTransfer.setData(MAKE_BOT_DRAG_TYPE, sessionId)
-        // A Bot the viewer owns can be dropped on Tasks to become one, as "Turn into a Task".
-        if (item.ownBotId) event.dataTransfer.setData(MAKE_TASK_DRAG_TYPE, item.ownBotId)
       }}
-      onDragEnd={() => setDragging(false)}
       data-sidebar-row
       className={clsx(
-        'transition-opacity duration-150',
-        dragging && 'opacity-40',
         // A row with a detail line keeps one height; the detail rises into it on hover.
         revealDetail && 'group/session relative h-9 overflow-hidden',
         item.description &&

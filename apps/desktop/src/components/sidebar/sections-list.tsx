@@ -13,7 +13,7 @@ import {
 } from '../SidebarNavItem'
 import { Kbd } from '../ui/kbd'
 
-import { ChatGroupDropZone } from './bot-drop'
+import { BotsDropZone } from './bot-drop'
 import { FavoriteToggle } from './favorite-toggle'
 import { FoldedStatus } from './folded-status'
 import { NestedRowBody } from './nest-guides'
@@ -75,12 +75,10 @@ export function SidebarSectionList({
   return (
     <>
       {shown.map((section, idx) => (
-        <ChatGroupDropZone
+        <BotsDropZone
           key={idx}
-          // Bots is titled 'Channels' inside: a Task dropped there becomes a Bot, and back.
-          target={
-            section.title === 'Channels' ? 'bots' : section.title === 'Tasks' ? 'tasks' : null
-          }
+          // Bots is titled 'Channels' inside; a Task dropped on it becomes a Bot.
+          enabled={section.title === 'Channels'}
           teamId={scope.teamId}
           className={clsx(
             'transition-[margin-bottom] duration-200',
@@ -281,7 +279,7 @@ export function SidebarSectionList({
               </div>
             </>
           )}
-        </ChatGroupDropZone>
+        </BotsDropZone>
       ))}
     </>
   )

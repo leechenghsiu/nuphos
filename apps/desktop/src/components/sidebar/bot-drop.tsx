@@ -1,49 +1,27 @@
 import clsx from 'clsx'
 import { useEffect, useRef, useState } from 'react'
 
-import { api } from '../../api'
 import { t } from '../../i18n'
-import { pickAgentAvatar } from '../../lib/agentAvatarChoices'
 import { makeBot } from '../channels/botChannel'
-import { toast } from '../ui/toast'
 
 import type { ReactNode } from 'react'
 
 /** Set on a Task row's drag when it can become a Bot; its value is the session id. */
 export const MAKE_BOT_DRAG_TYPE = 'application/x-nuphos-make-bot'
-/** Set on a Bots row's drag when the viewer can turn that Bot back into a Task. */
-export const MAKE_TASK_DRAG_TYPE = 'application/x-nuphos-make-task'
-
-/** What dropping on a group does, as the menus' "Make this a Bot" and "Turn into a Task". */
-const TARGETS = {
-  bots: {
-    type: MAKE_BOT_DRAG_TYPE,
-    hint: () => t('Drop to make it a Bot'),
-    drop: (teamId: string, sessionId: string) => void makeBot(teamId, sessionId),
-  },
-  tasks: {
-    type: MAKE_TASK_DRAG_TYPE,
-    hint: () => t('Drop to make it a Task'),
-    drop: (teamId: string, sessionId: string) =>
-      void pickAgentAvatar(sessionId, null, () =>
-        api.agentSetConversationAvatar(sessionId, null, teamId),
-      ).catch((err: unknown) => toast.apiError(t('Could not change avatar'), err)),
-  },
-} as const
-
 /**
- * A sidebar group as a drop target: a Task dropped on Bots becomes a Bot, and
- * a Bot dropped on Tasks becomes a Task. While such a drag is under way the
- * group shows where to drop; over it, it lights up. Other groups render as a
- * plain wrapper.
+ * Bots as a drop target: a Task dropped on it becomes a Bot, as "Make this a
+ * Bot" does. The Task keeps running and stays in Tasks; it gains a face and a
+ * chat here, so the drop copies rather than moves. While such a drag is under
+ * way the group shows where to drop; over any part of it, it lights up. Other
+ * groups render as a plain wrapper.
  */
-export function ChatGroupDropZone({
-  target,
+export function BotsDropZone({
+  enabled,
   teamId,
   className,
   children,
 }: {
-  target: keyof typeof TARGETS | null
+  enabled: boolean
   teamId: string
   className?: string
   /** Renders the group; `slot` is where the drop hint opens, under the group's title. */
@@ -53,8 +31,7 @@ export function ChatGroupDropZone({
   const [over, setOver] = useState(false)
   // dragenter and dragleave fire for every child crossed, so count them.
   const depth = useRef(0)
-  const spec = target ? TARGETS[target] : null
-  const type = spec?.type
+  const type = enabled ? MAKE_BOT_DRAG_TYPE : null
 
   useEffect(() => {
     if (!type) return
@@ -78,7 +55,7 @@ export function ChatGroupDropZone({
     }
   }, [type])
 
-  if (!spec) return <div className={className}>{children(null)}</div>
+  if (!type) return <div className={className}>{children(null)}</div>
 
   return (
     <div
@@ -92,23 +69,23 @@ export function ChatGroupDropZone({
       // Accepting dragenter as well as dragover keeps the group the drop target
       // over its rows too; otherwise the browser hands the drag to the body.
       onDragEnter={(event) => {
-        if (!event.dataTransfer.types.includes(spec.type)) return
+        if (!event.dataTransfer.types.includes(type)) return
         event.preventDefault()
         depth.current += 1
         setOver(true)
       }}
       onDragOver={(event) => {
-        if (!event.dataTransfer.types.includes(spec.type)) return
+        if (!event.dataTransfer.types.includes(type)) return
         event.preventDefault()
-        event.dataTransfer.dropEffect = 'move'
+        event.dataTransfer.dropEffect = 'copy'
       }}
       onDragLeave={(event) => {
-        if (!event.dataTransfer.types.includes(spec.type)) return
+        if (!event.dataTransfer.types.includes(type)) return
         depth.current = Math.max(0, depth.current - 1)
         if (depth.current === 0) setOver(false)
       }}
       onDrop={(event) => {
-        const sessionId = event.dataTransfer.getData(spec.type)
+        const sessionId = event.dataTransfer.getData(type)
 
         if (!sessionId) return
         event.preventDefault()
@@ -116,7 +93,7 @@ export function ChatGroupDropZone({
         depth.current = 0
         setDragging(false)
         setOver(false)
-        spec.drop(teamId, sessionId)
+        void makeBot(teamId, sessionId)
       }}
     >
       {children(
@@ -132,7 +109,12 @@ export function ChatGroupDropZone({
                   : 'border-dashed border-line-control text-tertiary',
               )}
             >
-              {spec.hint()}
+              <span className="flex flex-col items-center leading-tight">
+                <span>{t('Drop to make it a Bot')}</span>
+                <span className="text-[11.5px] text-tertiary">
+                  {t('It keeps running in Tasks')}
+                </span>
+              </span>
             </div>
           </div>
         </div>,
