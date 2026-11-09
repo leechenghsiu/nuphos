@@ -21,15 +21,25 @@ export function withChatSections(
   const sessionOf = (item: Item) => item.key.replace('agent-session:', '')
   const isChat = (item: Item) =>
     item.channel || (item.bot && !item.readOnlyChat && !chatted.has(sessionOf(item)))
-  const chats = agents.items.filter(isChat).map((item) => ({
-    ...item,
-    description: undefined,
-    // Bots shows faces: a Bot not yet in its chat wears its own, as its chat will.
-    ...(item.bot && {
-      iconNode: item.face,
-      ...(openBot && { onActivate: () => openBot(sessionOf(item)) }),
-    }),
-  }))
+  // A Bot the viewer owns can be dragged back to Tasks, from its chat or its own row.
+  const ownBot = (id: string | undefined) =>
+    id && agents.items.some((other) => sessionOf(other) === id && other.bot && !other.readOnlyChat)
+      ? id
+      : undefined
+  const chats = agents.items.filter(isChat).map((item) => {
+    const ownBotId = ownBot(item.channel ? item.botChannelOf : sessionOf(item))
+
+    return {
+      ...item,
+      description: undefined,
+      ...(ownBotId && { ownBotId }),
+      // Bots shows faces: a Bot not yet in its chat wears its own, as its chat will.
+      ...(item.bot && {
+        iconNode: item.face,
+        ...(openBot && { onActivate: () => openBot(sessionOf(item)) }),
+      }),
+    }
+  })
   // A Task is one line: its runtime icon and title, no latest message.
   const tasks = projects(
     agents.items

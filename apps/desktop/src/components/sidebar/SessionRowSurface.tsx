@@ -2,7 +2,7 @@ import clsx from 'clsx'
 
 import { SESSION_DRAG_TYPE } from '../../app/workspace/splitLayout'
 
-import { MAKE_BOT_DRAG_TYPE } from './bot-drop'
+import { MAKE_BOT_DRAG_TYPE, MAKE_TASK_DRAG_TYPE } from './bot-drop'
 
 import type { Item } from './types'
 import type { HTMLAttributes, MouseEvent } from 'react'
@@ -50,6 +50,8 @@ export function SessionRowSurface({
         // A Task can also be dropped on Bots to become one, as its menu's "Make this a Bot".
         if (item.task && !item.bot && !item.readOnlyChat)
           event.dataTransfer.setData(MAKE_BOT_DRAG_TYPE, sessionId)
+        // A Bot the viewer owns can be dropped on Tasks to become one, as "Turn into a Task".
+        if (item.ownBotId) event.dataTransfer.setData(MAKE_TASK_DRAG_TYPE, item.ownBotId)
       }}
       data-sidebar-row
       className={clsx(
