@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { api } from '../../api'
 import { t } from '../../i18n'
@@ -51,6 +51,8 @@ export function ChatGroupDropZone({
 }) {
   const [dragging, setDragging] = useState(false)
   const [over, setOver] = useState(false)
+  // dragenter and dragleave fire for every child crossed, so count them.
+  const depth = useRef(0)
   const spec = target ? TARGETS[target] : null
   const type = spec?.type
 
@@ -60,6 +62,7 @@ export function ChatGroupDropZone({
       if (event.dataTransfer?.types.includes(type)) setDragging(true)
     }
     const end = () => {
+      depth.current = 0
       setDragging(false)
       setOver(false)
     }
@@ -86,14 +89,23 @@ export function ChatGroupDropZone({
         'rounded-xl -outline-offset-1 transition-colors duration-150',
         over && 'bg-state-hover outline outline-1 outline-line-focus',
       )}
+      // Accepting dragenter as well as dragover keeps the group the drop target
+      // over its rows too; otherwise the browser hands the drag to the body.
+      onDragEnter={(event) => {
+        if (!event.dataTransfer.types.includes(spec.type)) return
+        event.preventDefault()
+        depth.current += 1
+        setOver(true)
+      }}
       onDragOver={(event) => {
         if (!event.dataTransfer.types.includes(spec.type)) return
         event.preventDefault()
         event.dataTransfer.dropEffect = 'move'
-        setOver(true)
       }}
       onDragLeave={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setOver(false)
+        if (!event.dataTransfer.types.includes(spec.type)) return
+        depth.current = Math.max(0, depth.current - 1)
+        if (depth.current === 0) setOver(false)
       }}
       onDrop={(event) => {
         const sessionId = event.dataTransfer.getData(spec.type)
@@ -101,6 +113,7 @@ export function ChatGroupDropZone({
         if (!sessionId) return
         event.preventDefault()
         event.stopPropagation()
+        depth.current = 0
         setDragging(false)
         setOver(false)
         spec.drop(teamId, sessionId)
