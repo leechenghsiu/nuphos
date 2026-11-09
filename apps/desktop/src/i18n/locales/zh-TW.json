@@ -2512,6 +2512,7 @@
   "Machine Type": "機器類型",
   "Make the primary button larger and move the sign-up link under the form": "把主要按鈕放大，並將註冊連結移到表單下方",
   "Make this a Bot": "變成 Bot",
+  "Drop to make it a Bot": "拖放到這裡，變成 Bot",
   "Make {role}": "設為{role}",
   "Manage": "管理",
   "Manage access": "管理存取權",
