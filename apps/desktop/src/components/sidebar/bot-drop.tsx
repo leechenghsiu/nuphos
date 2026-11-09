@@ -79,7 +79,13 @@ export function ChatGroupDropZone({
 
   return (
     <div
-      className={className}
+      // The whole group takes the drop, and shows it: over any part of it, the
+      // group fills and its hint firms up.
+      className={clsx(
+        className,
+        'rounded-xl -outline-offset-1 transition-colors duration-150',
+        over && 'bg-state-hover outline outline-1 outline-line-focus',
+      )}
       onDragOver={(event) => {
         if (!event.dataTransfer.types.includes(spec.type)) return
         event.preventDefault()
@@ -109,7 +115,7 @@ export function ChatGroupDropZone({
               className={clsx(
                 'mx-0.5 mb-1.5 mt-1 flex h-12 items-center justify-center rounded-xl border text-[12.5px] transition-colors duration-150',
                 over
-                  ? 'border-line-focus bg-state-hover text-secondary'
+                  ? 'border-transparent text-secondary'
                   : 'border-dashed border-line-control text-tertiary',
               )}
             >
