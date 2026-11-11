@@ -20,7 +20,8 @@ struct ConversationTrigger: Decodable, Identifiable {
 }
 
 struct ConversationTriggers: View {
-    let session: ChatSession
+    let teamId: String
+    let sessionId: String
     let token: String
     @State private var triggers: [ConversationTrigger] = []
     @State private var loading = true
@@ -70,7 +71,7 @@ struct ConversationTriggers: View {
     private func reload() async {
         do {
             let rows: [ConversationTrigger] = try await WorkspaceAPI.request(
-                "agent/triggers", query: [URLQueryItem(name: "teamId", value: session.teamId), URLQueryItem(name: "targetSessionId", value: session.sessionId)], token: token)
+                "agent/triggers", query: [URLQueryItem(name: "teamId", value: teamId), URLQueryItem(name: "targetSessionId", value: sessionId)], token: token)
             if Task.isCancelled { return }
             triggers = rows
             failure = nil
@@ -83,7 +84,7 @@ struct ConversationTriggers: View {
         defer { pending.remove(trigger.id) }
         do {
             let _: ConversationTrigger = try await WorkspaceAPI.request(
-                "agent/triggers/\(trigger.id)", query: [URLQueryItem(name: "teamId", value: session.teamId)], token: token,
+                "agent/triggers/\(trigger.id)", query: [URLQueryItem(name: "teamId", value: teamId)], token: token,
                 method: "PATCH", body: .object(["enabled": .bool(enabled)]))
             await reload()
         } catch { failure = error.localizedDescription }

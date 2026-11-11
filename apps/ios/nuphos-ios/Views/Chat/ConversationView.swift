@@ -212,7 +212,7 @@ struct ConversationView: View {
             Text(session.stopRefusal ?? "")
         }
         .sheet(item: $toolDetail) { ToolDetailSheet(part: $0) }
-        .sheet(isPresented: $showTriggers) { ConversationTriggers(session: session, token: store.token).presentationDetents([.medium, .large]) }
+        .sheet(isPresented: $showTriggers) { ConversationTriggers(teamId: session.teamId, sessionId: session.sessionId, token: store.token).presentationDetents([.large]) }
         .sheet(isPresented: $showShare) { ShareSessionSheet(session: session).presentationDetents([.medium, .large]) }
         .sheet(isPresented: $showRuntimes) {
             RuntimePickerSheet(session: session) { runtime in

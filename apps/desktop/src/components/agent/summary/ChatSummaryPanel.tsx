@@ -8,6 +8,7 @@ import { t } from '../../../i18n'
 import { useAgentRuntimeStates } from '../../../lib/agentRuntimeStates'
 import { setChatSummaryOpen } from '../../../lib/chatSummaryPanel'
 import { toast } from '../../ui/toast'
+import { botOfChannel } from '../../channels/botChannel'
 import { shellsFromRuntimeState } from '../panel/shells'
 
 import { BackgroundTasksSection } from './ChatSummaryBackgroundTasks'
@@ -168,6 +169,7 @@ function SummaryBody({
   // The lists that listed these threads published their states to the shared store.
   const runtimeStates = useAgentRuntimeStates()
   const subAgents = subAgentsOf(threads, runtimeStates)
+  const triggerHome = conversation?.kind === 'channel' ? botOfChannel(conversation.faces) ?? sessionId : sessionId
   const changes = changesOf(conversation?.linkedResources ?? [])
   const background = shellsFromRuntimeState(runtimeStates.get(sessionId))
 
@@ -219,9 +221,9 @@ function SummaryBody({
             />
             {background.length > 0 && <BackgroundTasksSection shells={background} />}
             <ChatSummaryTriggers
-              key={`${teamId}:${sessionId}`}
+              key={`${teamId}:${triggerHome}`}
               teamId={teamId}
-              sessionId={sessionId}
+              sessionId={triggerHome}
             />
             {!loaded && <Skeleton />}
             {changes.length > 0 && (
