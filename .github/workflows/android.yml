@@ -42,11 +42,7 @@ jobs:
           target: google_apis
           profile: pixel_7_pro
           disable-animations: true
-          script: |
-            adb shell cmd uimode night no
-            ./gradlew --no-daemon --max-workers=2 -Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true -PnuphosIsolatedRowActionsFixture=true :app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=ai.nuphos.android.FixtureDeviceTest#conversationTitleOpensTriggers
-            mkdir -p ../../trigger-evidence
-            adb pull /sdcard/Android/data/ai.nuphos.android.rowactions1357/files/review-2030/triggers-2096-android.png ../../trigger-evidence/android.png
+          script: bash ../../.github/scripts/capture-trigger-evidence.sh
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         if: always()
         with:
