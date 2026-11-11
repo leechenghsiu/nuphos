@@ -7,6 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.test.*
+import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -141,7 +142,12 @@ class FixtureDeviceTest {
         }
         compose.onNodeWithText("Production alerts").assertIsDisplayed()
         compose.onNodeWithText("Weekly dependency review").assertIsDisplayed()
-        capture("triggers-2096-android")
+        compose.waitForIdle()
+        val bitmap = compose.onAllNodes(isRoot())[1].captureToImage().asAndroidBitmap()
+        val directory = java.io.File(InstrumentationRegistry.getInstrumentation().targetContext.getExternalFilesDir(null), "review-2030").apply { mkdirs() }
+        java.io.File(directory, "triggers-2096-android.png").outputStream().use { check(bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it)) }
+        Thread.sleep(1_000)
+        capture("triggers-2096-system")
     }
 
     @Test fun readOnlyComposerPreventsSubmission() {
