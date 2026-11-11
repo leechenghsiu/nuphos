@@ -61,6 +61,7 @@ class FixtureDeviceTest {
             val body = if (request.url.encodedPath == "/agent/triggers" && triggerFixture != null) triggerFixture!!
                 else if (isDetail && status == 200) Http.json.encodeToString(AgentConversationDetail.serializer(), detail)
                 else if (isDetail) "{\"error\":{\"message\":\"Fixture conversation unavailable\"}}" else "{}"
+            if (request.url.encodedPath == "/agent/triggers") println("Trigger fixture response: $body")
             Response.Builder().request(request).protocol(Protocol.HTTP_1_1).code(if (isDetail) status else 200)
                 .message("fixture").body(body.toResponseBody(Http.jsonMedia)).build()
         }.build()
@@ -129,8 +130,8 @@ class FixtureDeviceTest {
             compose.waitUntil(30_000) { compose.onAllNodesWithText("Morning PR digest").fetchSemanticsNodes().isNotEmpty() }
         } catch (failure: Throwable) {
             println("Trigger requests: $requests; token=${auth.token != null}; team=${store.session("fixture", "").teamId}")
-            println(compose.onRoot(useUnmergedTree = true).printToString())
             capture("triggers-2096-failure")
+            println(compose.onAllNodes(isRoot(), useUnmergedTree = true).printToString())
             throw failure
         }
         compose.onNodeWithText("Production alerts").assertIsDisplayed()
