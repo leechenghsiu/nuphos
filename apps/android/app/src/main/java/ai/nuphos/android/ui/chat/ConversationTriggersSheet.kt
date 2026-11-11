@@ -30,11 +30,13 @@ fun ConversationTriggersSheet(token: String, team: String, session: String, onDi
     val scope = rememberCoroutineScope()
     suspend fun reload() {
         try {
+            println("Trigger UI reload start")
             triggers = ConversationTriggersApi.list(token, team, session)
+            println("Trigger UI reload completed: ${triggers.size}")
             failure = null
         } catch (e: CancellationException) { throw e }
         catch (e: Exception) { failure = e.message ?: "Could not load triggers" }
-        finally { loading = false }
+        finally { loading = false; println("Trigger UI loading finished") }
     }
     LaunchedEffect(token, team, session) { while (true) { reload(); delay(30_000) } }
     ModalBottomSheet(onDismissRequest = onDismiss) {
