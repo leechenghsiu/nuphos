@@ -249,7 +249,8 @@ export const agentChannels = {
     agent.updatePlanApprovalPolicy(teamId, minimumOtherApprovals),
   'agent:retryPlan': (_e: unknown, planId: string, teamId?: string) =>
     agent.retryPlan(planId, teamId),
-  'agent:listTriggers': (_e: unknown, teamId?: string) => agent.listAgentTriggers(teamId),
+  'agent:listTriggers': (_e: unknown, teamId?: string, targetSessionId?: string) =>
+    agent.listAgentTriggers(teamId, targetSessionId),
   'agent:listTriggerGroups': (_e: unknown, teamId?: string) => agent.listAgentTriggerGroups(teamId),
   'agent:updateTriggerGroup': (
     _e: unknown,

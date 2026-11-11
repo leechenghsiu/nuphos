@@ -26,6 +26,7 @@ struct ConversationView: View {
     #else
     private let barButtonsInSideRail = false
     #endif
+    @State private var showTriggers = false
     @State private var showRename = false
     @State private var renamedTitle = ""
     @State private var showRuntimes = false
@@ -211,6 +212,7 @@ struct ConversationView: View {
             Text(session.stopRefusal ?? "")
         }
         .sheet(item: $toolDetail) { ToolDetailSheet(part: $0) }
+        .sheet(isPresented: $showTriggers) { ConversationTriggers(session: session, token: store.token).presentationDetents([.medium, .large]) }
         .sheet(isPresented: $showShare) { ShareSessionSheet(session: session).presentationDetents([.medium, .large]) }
         .sheet(isPresented: $showRuntimes) {
             RuntimePickerSheet(session: session) { runtime in
@@ -280,6 +282,10 @@ struct ConversationView: View {
         // iPhone Duo those buttons sit in the side rail, so the title gets
         // the whole bar.
         .frame(width: max(width - (barButtonsInSideRail ? 0 : 136), 0), alignment: .leading)
+        .contentShape(Rectangle())
+        .onTapGesture { if !session.isNew { showTriggers = true } }
+        .accessibilityAddTraits(.isButton)
+        .accessibilityHint("Show conversation triggers")
     }
 
     /// Plan links open the plan here, approved through this chat; other app

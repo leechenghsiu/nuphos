@@ -8,14 +8,12 @@ import { settingsLinkTarget, settingsNavGroups, settingsSectionForPage } from '.
 
 const team = { kind: 'team', teamId: 'aaaaaaaaaaaaaaaaaaaaaaaa' } as const
 
-test('Skills, Memories and Triggers open their Team Settings sections', () => {
+test('Skills and Memories open their Team Settings sections', () => {
   const keys = settingsNavGroups('team').flatMap((group) => group.items.map((item) => item.key))
 
   for (const [page, section] of [
     ['team.agent-skills', 'workspace.skills'],
     ['team.agent-memories', 'workspace.memories'],
-    ['team.triggers', 'workspace.triggers'],
-    ['team.schedule', 'workspace.triggers'],
   ]) {
     assert.equal(settingsSectionForPage(page), section)
     assert.ok(keys.includes(section))
@@ -42,4 +40,14 @@ test("a Settings link opens the link's team, not the one on screen", () => {
   // A team the viewer is not in opens nothing rather than the current team's Settings.
   assert.equal(settingsLinkTarget(link, [team.teamId]), null)
   assert.equal(settingsLinkTarget(emptyNavigation(team, 'team.plans'), [team.teamId]), undefined)
+})
+
+test('Triggers are managed in conversations, not Team Settings', () => {
+  assert.equal(settingsSectionForPage('team.triggers'), undefined)
+  assert.equal(settingsSectionForPage('team.schedule'), undefined)
+  assert.ok(
+    !settingsNavGroups('team')
+      .flatMap((group) => group.items)
+      .some((item) => item.key === 'workspace.triggers'),
+  )
 })

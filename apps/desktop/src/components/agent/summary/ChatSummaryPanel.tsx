@@ -12,6 +12,7 @@ import { shellsFromRuntimeState } from '../panel/shells'
 
 import { BackgroundTasksSection } from './ChatSummaryBackgroundTasks'
 import { ChangesSection } from './ChatSummaryChanges'
+import { ChatSummaryTriggers } from './ChatSummaryTriggers'
 import { ChatSummaryEnvironment } from './ChatSummaryEnvironment'
 import { changesOf, splitFileName, subAgentsOf } from './chatSummaryModel'
 import { SummaryRow, SummarySection } from './ChatSummaryRows'
@@ -217,6 +218,11 @@ function SummaryBody({
               onSelect={select}
             />
             {background.length > 0 && <BackgroundTasksSection shells={background} />}
+            <ChatSummaryTriggers
+              key={`${teamId}:${sessionId}`}
+              teamId={teamId}
+              sessionId={sessionId}
+            />
             {!loaded && <Skeleton />}
             {changes.length > 0 && (
               <ChangesSection sessionId={sessionId} changes={changes} onOpen={onOpenLink} />

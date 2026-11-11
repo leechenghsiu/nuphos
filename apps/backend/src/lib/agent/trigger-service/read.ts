@@ -1,32 +1,46 @@
-import { AppError } from '@/lib/errors'
+import { nextCronRuns } from '@/lib/cron'
 import { logError, logEvent } from '@/lib/observability'
 import { clearSlackNotificationIncidentsForTrigger } from '@/lib/slack/incident-notifications'
 
 import { assertTriggerAccess, canManageTrigger } from '../trigger-access'
-import { agentTriggers, liveTriggerShapeFilter, triggerConfigRevisionFilter } from '../trigger-db'
+import { agentTriggers, triggerConfigRevisionFilter } from '../trigger-db'
 import { managedProviderResourcePlanForTrigger } from '../trigger-provider-resources'
 import { unscheduleCronTrigger } from '../trigger-scheduler'
 
+import { triggerListFilter } from './list-filter'
+import { triggerScheduleDescription } from './schedule-description'
 import { findManagedTrigger, parseTriggerId, serializeTrigger } from './shared'
 
 import type { TriggerActor } from '../trigger-access'
 import type { ManagedProviderResourcePlan } from '../trigger-provider-resources'
 import type { SerializedTrigger } from './shared'
 
-export async function listTriggers(scope: {
-  userId: string
-  teamId?: string
-}): Promise<SerializedTrigger[]> {
-  const ownership = scope.teamId
-    ? { teamId: scope.teamId }
-    : { userId: scope.userId, teamId: { $exists: false } }
+export async function listTriggers(
+  scope: {
+    userId: string
+    teamId?: string
+  },
+  targetSessionId?: string,
+) {
   const rows = await agentTriggers()
-    .find({ ...ownership, ...liveTriggerShapeFilter })
+    .find(triggerListFilter(scope, targetSessionId))
     .sort({ createdAt: -1 })
     .limit(100)
     .toArray()
 
-  return rows.map((t) => serializeTrigger(t))
+  const canManage =
+    rows.length > 0 &&
+    (await canManageTrigger({ userId: scope.userId, teamId: scope.teamId }, scope))
+
+  return rows.map((trigger) => ({
+    ...serializeTrigger(trigger),
+    scheduleDescription: triggerScheduleDescription(trigger),
+    canManage: !trigger.cleanupStatus && canManage,
+    nextRunAt:
+      trigger.enabled && trigger.triggerType === 'cron' && trigger.cronExpression
+        ? (nextCronRuns(trigger.cronExpression, 1)[0] ?? null)
+        : null,
+  }))
 }
 
 /** The single-trigger view exposes the webhook secret only to an authorized manager. */
