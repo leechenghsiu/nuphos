@@ -35,6 +35,7 @@ export type ManagedProviderResourcePlan = {
 
 export type AgentTrigger = {
   scheduleDescription?: string
+  canDelete?: boolean
   canManage?: boolean
   nextRunAt?: string | null
   id: string

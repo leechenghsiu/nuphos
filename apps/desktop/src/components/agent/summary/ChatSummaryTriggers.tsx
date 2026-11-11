@@ -7,6 +7,7 @@ import { scheduleSummary } from '../../../views/triggers/cron'
 import { Switch } from '../../ui/Switch'
 
 import { SummarySection } from './ChatSummaryRows'
+import { ChatSummaryTriggerRecovery } from './ChatSummaryTriggerRecovery'
 
 import type { AgentTrigger } from '../../../api/agent-trigger-types'
 
@@ -117,6 +118,19 @@ export function ChatSummaryTriggers({ teamId, sessionId }: { teamId: string; ses
               {trigger.scheduleDescription ?? scheduleSummary(trigger)}
             </p>
             <p className="text-xs leading-5 text-tertiary">{nextRunLabel(trigger)}</p>
+            <ChatSummaryTriggerRecovery
+              trigger={trigger}
+              teamId={teamId}
+              onUpdated={(result) =>
+                setTriggers((current) =>
+                  result.deleted
+                    ? current.filter((row) => row.id !== trigger.id)
+                    : current.map((row) =>
+                        row.id === trigger.id ? { ...row, ...result.trigger } : row,
+                      ),
+                )
+              }
+            />
           </div>
           <Switch
             checked={trigger.enabled}

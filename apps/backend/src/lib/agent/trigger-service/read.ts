@@ -1,3 +1,4 @@
+import { getTeamMembership } from '@/lib/identity'
 import { nextCronRuns } from '@/lib/cron'
 import { logError, logEvent } from '@/lib/observability'
 import { clearSlackNotificationIncidentsForTrigger } from '@/lib/slack/incident-notifications'
@@ -32,10 +33,15 @@ export async function listTriggers(
     rows.length > 0 &&
     (await canManageTrigger({ userId: scope.userId, teamId: scope.teamId }, scope))
 
+  const canDelete = scope.teamId
+    ? (await getTeamMembership(scope.userId, scope.teamId))?.role === 'ADMINISTRATOR'
+    : true
+
   return rows.map((trigger) => ({
     ...serializeTrigger(trigger),
     scheduleDescription: triggerScheduleDescription(trigger),
     canManage: !trigger.cleanupStatus && canManage,
+    canDelete,
     nextRunAt:
       trigger.enabled && trigger.triggerType === 'cron' && trigger.cronExpression
         ? (nextCronRuns(trigger.cronExpression, 1)[0] ?? null)
