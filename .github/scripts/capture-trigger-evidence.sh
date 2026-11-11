@@ -9,5 +9,6 @@ adb logcat -c
 adb shell am instrument -w -r -e class 'ai.nuphos.android.FixtureDeviceTest#conversationTitleOpensTriggers' ai.nuphos.android.rowactions1357.test/androidx.test.runner.AndroidJUnitRunner | tee ../../trigger-evidence/instrumentation.txt
 adb exec-out screencap -p > ../../trigger-evidence/final-screen.png
 adb logcat -d > ../../trigger-evidence/logcat.txt
-rg -q 'OK \(1 test\)' ../../trigger-evidence/instrumentation.txt
+adb pull /sdcard/Android/data/ai.nuphos.android.rowactions1357/files/review-2030/ ../../trigger-evidence/native-captures
+grep -q 'OK (1 test)' ../../trigger-evidence/instrumentation.txt
 adb pull /sdcard/Android/data/ai.nuphos.android.rowactions1357/files/review-2030/triggers-2096-android.png ../../trigger-evidence/android.png

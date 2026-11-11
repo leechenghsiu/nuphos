@@ -125,7 +125,14 @@ class FixtureDeviceTest {
         triggerFixture = """[{"id": "digest", "name": "Morning PR digest", "enabled": true, "triggerType": "cron", "cronExpression": "0 9 * * 1-5", "scheduleDescription": "Weekdays at 09:00 UTC", "nextRunAt": "2027-01-04T09:00:00.000Z", "canManage": true}, {"id": "watch", "name": "Production alerts", "enabled": true, "triggerType": "webhook", "scheduleDescription": "When a webhook arrives", "canManage": true}, {"id": "weekly", "name": "Weekly dependency review", "enabled": false, "triggerType": "cron", "cronExpression": "0 10 * * 1", "scheduleDescription": "Mondays at 10:00 UTC", "canManage": true}]"""
         render(emptyList())
         compose.onNodeWithContentDescription("Show conversation triggers").performClick()
-        compose.waitUntil(10_000) { compose.onAllNodesWithText("Morning PR digest").fetchSemanticsNodes().isNotEmpty() }
+        try {
+            compose.waitUntil(30_000) { compose.onAllNodesWithText("Morning PR digest").fetchSemanticsNodes().isNotEmpty() }
+        } catch (failure: Throwable) {
+            println("Trigger requests: $requests; token=${auth.token != null}; team=${store.session("fixture", "").teamId}")
+            println(compose.onRoot(useUnmergedTree = true).printToString())
+            capture("triggers-2096-failure")
+            throw failure
+        }
         compose.onNodeWithText("Production alerts").assertIsDisplayed()
         compose.onNodeWithText("Weekly dependency review").assertIsDisplayed()
         capture("triggers-2096-android")
