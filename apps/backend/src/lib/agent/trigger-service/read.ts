@@ -44,7 +44,7 @@ export async function listTriggers(
     canDelete,
     nextRunAt:
       trigger.enabled && trigger.triggerType === 'cron' && trigger.cronExpression
-        ? (nextCronRuns(trigger.cronExpression, 1)[0] ?? null)
+        ? (nextCronRuns(trigger.cronExpression, 1, trigger.timeZone)[0] ?? null)
         : null,
   }))
 }

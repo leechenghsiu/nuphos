@@ -80,6 +80,7 @@ export function ChatSummaryTriggers({ teamId, sessionId }: { teamId: string; ses
                           row.cronExpression ?? '',
                           new Date(),
                           1,
+                          row.timeZone,
                         )[0]?.toISOString()
                       : null,
                 }

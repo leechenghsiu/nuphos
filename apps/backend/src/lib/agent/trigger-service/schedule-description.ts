@@ -33,8 +33,16 @@ function describeCron(expression: string): string {
 export function triggerScheduleDescription(trigger: {
   triggerType: string
   cronExpression?: string
+  timeZone?: string
 }): string {
   if (trigger.triggerType !== 'cron') return 'When a webhook arrives'
 
-  return describeCron(trigger.cronExpression ?? '')
+  const description = describeCron(trigger.cronExpression ?? '')
+  const zone = trigger.timeZone ?? 'UTC'
+
+  if (zone === 'UTC') return description
+
+  return description.includes('UTC')
+    ? description.replaceAll('UTC', zone)
+    : `${description} (${zone})`
 }

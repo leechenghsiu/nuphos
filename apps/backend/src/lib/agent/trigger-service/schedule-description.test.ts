@@ -14,3 +14,13 @@ test('describes common schedules and keeps UTC explicit', () => {
   expect(describe('0 9 1 * *')).toBe('Schedule: 0 9 1 * * (UTC)')
   expect(triggerScheduleDescription({ triggerType: 'webhook' })).toBe('When a webhook arrives')
 })
+
+test('a named schedule zone is preserved in the conversation description', () => {
+  expect(
+    triggerScheduleDescription({
+      triggerType: 'cron',
+      cronExpression: '30 9 * * 1-5',
+      timeZone: 'America/New_York',
+    }),
+  ).toBe('Weekdays at 09:30 America/New_York')
+})

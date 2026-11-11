@@ -286,6 +286,7 @@ struct ConversationView: View {
         .onTapGesture { if !session.isNew { showTriggers = true } }
         .accessibilityAddTraits(.isButton)
         .accessibilityHint("Show conversation triggers")
+        .accessibilityIdentifier("conversation-trigger-entry")
     }
 
     /// Plan links open the plan here, approved through this chat; other app
