@@ -32,3 +32,30 @@ jobs:
         run: |
           python3 -m unittest discover -s scripts -p 'test_*.py'
           ./gradlew --no-daemon :app:testDebugUnitTest :app:lintDebug :app:assembleDebug :app:assembleDebugAndroidTest
+      - name: Prepare isolated emulator
+        run: |
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "system-images;android-35;google_apis;x86_64" "emulator"
+          echo no | "$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager" create avd --force --name trigger-evidence --package "system-images;android-35;google_apis;x86_64"
+          sudo chmod 666 /dev/kvm
+          "$ANDROID_HOME/emulator/emulator" -avd trigger-evidence -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect -no-snapshot > /tmp/emulator.log 2>&1 &
+          adb wait-for-device
+          timeout 240 sh -c 'until [ "$(adb shell getprop sys.boot_completed | tr -d "\r")" = 1 ]; do sleep 3; done'
+          adb shell input keyevent 82
+          adb shell cmd uimode night no
+          adb shell settings put global window_animation_scale 0
+          adb shell settings put global transition_animation_scale 0
+          adb shell settings put global animator_duration_scale 0
+      - name: Capture actual conversation trigger sheet
+        working-directory: apps/android
+        run: |
+          ./gradlew --no-daemon -PnuphosIsolatedRowActionsFixture=true :app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=ai.nuphos.android.FixtureDeviceTest#conversationTitleOpensTriggers
+          mkdir -p ../../trigger-evidence
+          adb pull /sdcard/Android/data/ai.nuphos.android.rowactions1357/files/review-2030/triggers-2096-android.png ../../trigger-evidence/android.png
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        if: always()
+        with:
+          name: trigger-ui-evidence
+          path: |
+            trigger-evidence/
+            apps/android/app/build/reports/androidTests/connected/debug/
+          if-no-files-found: warn
