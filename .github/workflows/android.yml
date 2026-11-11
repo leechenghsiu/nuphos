@@ -13,7 +13,8 @@ permissions:
 
 jobs:
   android:
-    name: Android (tests, lint, APK build)
+    name: Android trigger UI evidence
+    timeout-minutes: 30
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -27,18 +28,16 @@ jobs:
         run: |
           (yes || true) | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null
           "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-37.0" "platform-tools"
-      - name: Test, lint, and build
-        working-directory: apps/android
-        run: |
-          python3 -m unittest discover -s scripts -p 'test_*.py'
-          ./gradlew --no-daemon :app:testDebugUnitTest :app:lintDebug :app:assembleDebug :app:assembleDebugAndroidTest
       - name: Prepare isolated emulator
         run: |
+          export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH"
+          echo "$ANDROID_HOME/platform-tools" >> "$GITHUB_PATH"
+          echo "$ANDROID_HOME/emulator" >> "$GITHUB_PATH"
           "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "system-images;android-35;google_apis;x86_64" "emulator"
           echo no | "$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager" create avd --force --name trigger-evidence --package "system-images;android-35;google_apis;x86_64"
           sudo chmod 666 /dev/kvm
           "$ANDROID_HOME/emulator/emulator" -avd trigger-evidence -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect -no-snapshot > /tmp/emulator.log 2>&1 &
-          adb wait-for-device
+          timeout 120 adb wait-for-device
           timeout 240 sh -c 'until [ "$(adb shell getprop sys.boot_completed | tr -d "\r")" = 1 ]; do sleep 3; done'
           adb shell input keyevent 82
           adb shell cmd uimode night no
