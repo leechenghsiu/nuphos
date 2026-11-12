@@ -5,6 +5,7 @@ import { useEffect, useId } from 'react'
 import { useHoverMarquee } from '../hooks/useHoverMarquee'
 import { useTextSwap } from '../hooks/useTextSwap'
 import { t } from '../i18n'
+
 import { Fenced, TrailingSlot } from './SidebarRowParts'
 import { CountBadge } from './ui/count-badge'
 
@@ -149,7 +150,7 @@ export function SidebarNavItem({
         twoLine &&
           'font-medium [&>.t-text-swap]:max-w-full [&>.t-text-swap]:truncate [&>.t-text-swap]:align-top',
         revealDetail &&
-          'transition-transform duration-[280ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-reduce:transition-none',
+          '[&>.t-text-swap]:align-top transition-transform duration-[280ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-reduce:transition-none',
       )}
       // Lifted in index.css only when the row's detail line has content.
       data-row-title={revealDetail || undefined}
@@ -184,6 +185,7 @@ export function SidebarNavItem({
     <BaseButton
       disabled={disabled}
       // Inside a sidebar row the row starts the scroll; restarting here would reset it.
+      draggable={navigateOnRelease}
       onPointerEnter={(event) => {
         if (!event.currentTarget.closest('[data-sidebar-row]')) start()
       }}

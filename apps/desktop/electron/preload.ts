@@ -21,6 +21,7 @@ import { channelsApi } from './preload-parts/api-channels'
 import { sessionAccessApi } from './preload-parts/api-session-access'
 import { signInSessionsApi } from './preload-parts/api-sign-in-sessions'
 import { teamApi } from './preload-parts/api-team'
+import { sidebarGesturesApi } from './preload-parts/api-sidebar-gestures'
 import { windowSessionApi } from './preload-parts/api-window-session'
 
 const api = {
@@ -43,6 +44,7 @@ const api = {
   ...channelsApi,
   ...signInSessionsApi,
   ...windowSessionApi,
+  ...sidebarGesturesApi,
   ...connectApi,
   ...instructionsApi,
   ...browserExtensionsApi,
