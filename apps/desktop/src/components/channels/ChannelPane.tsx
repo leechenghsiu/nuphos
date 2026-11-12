@@ -45,6 +45,7 @@ export function ChannelPane({
   channelId,
   user,
   dockOpen,
+  visible = true,
   grip,
   titlebarLeading,
   titlebarClassName,
@@ -55,6 +56,7 @@ export function ChannelPane({
   channelId: string
   user: UserInfo
   dockOpen: boolean
+  visible?: boolean
   grip?: ReactNode
   /** Leads the header; the sidebar's toggle once this pane holds the window's corner. */
   titlebarLeading?: ReactNode
@@ -66,8 +68,7 @@ export function ChannelPane({
 }) {
   const { detail, agents, refresh } = useChannel(teamId, channelId)
 
-  // On screen, the channel is read, as an open conversation is.
-  useConversationRead(channelId, true)
+  useConversationRead(channelId, visible)
   // Text that could not be posted goes back into the composer.
   const [restore, setRestore] = useState<AgentPromptSeed | null>(null)
   // A resend of the same post reuses its id, so a post that did land is not doubled.
