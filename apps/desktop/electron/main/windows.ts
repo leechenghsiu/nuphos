@@ -14,6 +14,7 @@ import { guardFilePreviewFrames } from './file-preview-guard'
 import { APP_NAME, isDev } from './env'
 import { closeBrowserTabs } from './local-runtime/browser-tabs'
 import { openExternal } from './open-external'
+import { initSidebarGestures } from './sidebar-gestures'
 import { liveSessionShortcut } from './session-shortcuts'
 import { lastClosedWindow, placementFor, readSavedWindows, trackWindow } from './window-session'
 import { MIN_WINDOW_SIZE } from './window-session-core'
@@ -157,6 +158,8 @@ export function createWindow(restore: SavedWindow | null = lastClosedWindow()): 
       webviewTag: true,
     },
   })
+
+  initSidebarGestures()
 
   const publishFullScreen = () => {
     if (!win.isDestroyed()) win.webContents.send('app:fullScreenChanged', win.isFullScreen())
