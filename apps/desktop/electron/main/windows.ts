@@ -117,14 +117,8 @@ export function createWindow(restore: SavedWindow | null = lastClosedWindow()): 
     ...placement.bounds,
     minWidth: MIN_WINDOW_SIZE.width,
     minHeight: MIN_WINDOW_SIZE.height,
-    // macOS keeps the inset native traffic lights. Every other platform gets a
-    // fully frameless window (no native frame, no menu bar) so our custom
-    // titlebar is the entire chrome and the app looks native. On Windows the
-    // `hiddenInset` value was silently ignored and fell back to a full native
-    // frame + menu — `hidden` is the supported value there.
-    // 'hidden' (not 'hiddenInset') on macOS so `trafficLightPosition` /
-    // `setWindowButtonPosition` take effect — we move the buttons to track page
-    // zoom (cmd +/-), which the OS-drawn controls otherwise ignore.
+    // macOS uses hidden chrome so native traffic lights can track page zoom.
+    // Windows/Linux use a frameless titlebar; hiddenInset is ignored on Windows.
     titleBarStyle: 'hidden',
     ...(isDarwin ? { trafficLightPosition: trafficLightPositionFor(1) } : {}),
     // Windows and Linux: draw the native minimize/maximize/close caption buttons
