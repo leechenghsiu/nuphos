@@ -3,8 +3,6 @@ import { fileURLToPath } from 'node:url'
 
 import { BrowserWindow, session } from 'electron'
 
-import { computersShortcut } from '../../src/lib/computersShortcut'
-import { regionShortcut } from '../../src/lib/regionShortcut'
 import { apiUrl } from '../api-endpoint'
 import * as k8s from '../k8s'
 import * as podExec from '../pod-exec'
@@ -17,7 +15,7 @@ import { APP_NAME, isDev } from './env'
 import { closeBrowserTabs } from './local-runtime/browser-tabs'
 import { openExternal } from './open-external'
 import { initSidebarGestures } from './sidebar-gestures'
-import { liveSessionShortcut } from './session-shortcuts'
+import { windowShortcut } from './window-shortcuts'
 import { lastClosedWindow, placementFor, readSavedWindows, trackWindow } from './window-session'
 import { MIN_WINDOW_SIZE } from './window-session-core'
 import { titleBarOverlayFor } from './window-titlebar'
@@ -88,6 +86,10 @@ export function showMainWindow(): BrowserWindow {
     return existing
   }
 
+  // A freshly created window starts hidden (show: false) and reveals itself
+  // via its own 'ready-to-show' handler. Calling raiseWindow() here would fire
+  // win.show() before the first paint, causing the blank-window flash the
+  // ready-to-show pattern exists to prevent.
   return createWindow()
 }
 
@@ -99,6 +101,7 @@ export function dispatchAppShortcut(action: AppShortcut) {
 
 /** Reopens the windows the last run left open, or one default window. */
 export function restoreWindows() {
+  // Connect to the backend while the window loads, so its first request skips
   // the DNS lookup and TLS handshake.
   session.defaultSession.preconnect({ url: apiUrl(), numSockets: 1 })
   const saved = readSavedWindows()
@@ -226,10 +229,7 @@ export function createWindow(restore: SavedWindow | null = lastClosedWindow()): 
       process.platform === 'darwin' ? input.meta && !input.control : input.control && !input.meta
     // Session-menu combos (⌥⌘R, ⇧⌘A, …) match the physical key, and F6 has no
     // modifier at all, so they run before the bail-out below. F6 must leave a terminal.
-    const sessionAction =
-      liveSessionShortcut(win.webContents, input) ??
-      regionShortcut(input) ??
-      computersShortcut(input, process.platform === 'darwin')
+    const sessionAction = windowShortcut(win.webContents, input)
 
     if (sessionAction) {
       event.preventDefault()
