@@ -1,0 +1,16 @@
+{
+  "expectedSize": 8,
+  "actual": {
+    "width": "8px",
+    "height": "8px",
+    "rectWidth": 8,
+    "rectHeight": 8
+  },
+  "pass": true,
+  "adapter": "Electron ipcMain handler boundary",
+  "channels": [
+    "device:getIdentity",
+    "device:listAudit"
+  ],
+  "noShellExecution": true
+}
