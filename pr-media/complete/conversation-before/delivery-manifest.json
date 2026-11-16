@@ -1,0 +1,25 @@
+{
+  "phase": "before",
+  "commit": "f32dbbeb32b2dc2ac8523e0b1950251074be9bd8",
+  "screenshots": [
+    "01-task-composer.png",
+    "02-attachment-brands.png",
+    "03-attachment-types-expanded.png",
+    "04-session-loading.png",
+    "05-file-folder-image-chips.png",
+    "06-image-preview-expanded.png",
+    "07-task-message-complete.png",
+    "08-message-copied.png",
+    "09-message-edit-expanded.png",
+    "10-bot-conversation.png",
+    "toast-error.png",
+    "toast-info.png",
+    "toast-success.png"
+  ],
+  "movie": "conversation-scenarios.mp4",
+  "allDimensions": [
+    1400,
+    880
+  ],
+  "passed": true
+}
