@@ -1,0 +1,32 @@
+{
+  "channelContainsSyntheticUpdate": true,
+  "themes": {
+    "light": {
+      "unread": "rgb(28, 26, 23)",
+      "attention": "rgb(184, 58, 10)",
+      "different": true
+    },
+    "dark": {
+      "unread": "rgb(242, 240, 236)",
+      "attention": "rgb(244, 122, 63)",
+      "different": true
+    }
+  },
+  "reducedMotion": {
+    "method": "Electron CDP prefers-reduced-motion emulation; no macOS preference changed",
+    "matches": true,
+    "animations": [
+      {
+        "state": "running",
+        "name": "t-marquee-fade-in-start"
+      },
+      {
+        "state": "running",
+        "name": "t-marquee-fade-out-end"
+      }
+    ],
+    "pulseRule": [
+      "@media (prefers-reduced-motion: reduce) {\n  .animate-pulse { animation: auto ease 0s 1 normal none running none; }\n}"
+    ]
+  }
+}
