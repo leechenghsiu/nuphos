@@ -1,0 +1,255 @@
+{
+  "head": "fcfd89f1b8480c2da777b896dfb8b8292fcff9a0",
+  "method": "Electron webContents.sendInputEvent keydown, observed before-input-event; explicit renderer modifier-release cleanup between intercepted synthetic chord cases",
+  "keys": [
+    {
+      "key": "1",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "1",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "1",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "1",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "1",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "1",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "1",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "2",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "2",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "2",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "2",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "2",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "2",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "2",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "3",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "3",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "3",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "3",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "3",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "3",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "3",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "2",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "2",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "2",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "2",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "2",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "2",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "2",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "1",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "1",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "1",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "1",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "1",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "1",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "1",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "3",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "3",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "3",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "3",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "3",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "3",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "3",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "2",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "2",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "2",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "2",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "2",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "2",
+      "type": "keyDown",
+      "control": true
+    },
+    {
+      "key": "2",
+      "type": "keyDown",
+      "control": true
+    }
+  ],
+  "holdDelayPassed": true,
+  "composerPassed": true,
+  "collapsedPassed": true,
+  "reorderPassed": true
+}

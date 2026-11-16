@@ -1,0 +1,6 @@
+{
+  "method": "Electron sendInputEvent; actual local xterm focused",
+  "focus": "xterm-helper-textarea",
+  "selected": "inbox",
+  "passed": true
+}
