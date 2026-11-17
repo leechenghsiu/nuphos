@@ -49,6 +49,7 @@ try {
   const scoped = await fetch(`${stack.apiUrl}/agent/triggers?teamId=${stack.teamId}&targetSessionId=${bot.sessionId}`, { headers })
   const rows = await scoped.json() as { targetSessionId: string; name: string }[]
   if (rows.length !== 1 || rows.some(row => row.targetSessionId !== bot.sessionId)) throw new Error('Trigger list is not Bot-scoped')
+  await page.waitForTimeout(650) // Let the real app's opening/closing transitions finish.
   await page.screenshot({ path: `${artifacts}/01-bot-triggers.png` })
   await page.keyboard.press('Escape')
   await page.getByRole('dialog', { name: 'Triggers', exact: true }).waitFor({ state: 'hidden' })
@@ -59,11 +60,13 @@ try {
   const summary = page.getByRole('complementary', { name: 'Agent summary', exact: true })
   await summary.getByText('Which marker should the fixture use?', { exact: true }).first().waitFor()
   await summary.getByText('Weekly design sync (fixture)', { exact: true }).waitFor()
+  await page.waitForTimeout(650) // Let the real app's opening/closing transitions finish.
   await page.screenshot({ path: `${artifacts}/02-task-summary-question.png` })
   await page.getByRole('button', { name: 'Back to conversation', exact: true }).click()
   await page.getByRole('button', { name: 'Back to conversation', exact: true }).waitFor({ state: 'hidden' })
   await page.getByRole('button', { name: 'Triggers', exact: true }).waitFor()
   if (await page.getByRole('dialog', { name: 'Triggers', exact: true }).count()) throw new Error('Underlying chat popover changed from closed to open')
+  await page.waitForTimeout(650) // Let the real app's opening/closing transitions finish.
   await page.screenshot({ path: `${artifacts}/03-chat-restored.png` })
   writeFileSync(`${artifacts}/evidence-result.json`, JSON.stringify({ sourceHead: '6de7bfc4dba170dd3fd12d8a4b8e54e7801536ac',
     realElectron: true, realBackend: true, syntheticData: true, theme: 'light', botScopedRows: rows.length,
