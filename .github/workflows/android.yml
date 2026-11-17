@@ -1,73 +1,82 @@
-name: Android
+name: Bot trigger real-app evidence
 
+# The Desktop app driven against a real backend, MongoDB, file store and OpenAB, with a
+# deterministic agent in place of a model: `bun run e2e`, the same command a
+# contributor runs. Not a required check yet; see #2855.
 on:
   pull_request:
     paths:
-      - 'apps/android/**'
-      - '.github/workflows/android.yml'
-      - '.github/workflows/android-release.yml'
+      - 'apps/desktop/**'
+      - 'apps/backend/**'
+      - 'apps/runtime/openab/**'
+      - 'scripts/e2e/**'
+      - 'package.json'
+      - 'bun.lock'
+      - '.github/workflows/e2e.yml'
   workflow_dispatch:
 
 permissions:
   contents: read
 
-jobs:
-  android:
-    name: Android (tests, lint, APK build)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
-        with:
-          distribution: temurin
-          java-version: '21'
-      - name: Accept SDK licenses and install platform
-        run: |
-          (yes || true) | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null
-          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-37.0" "platform-tools"
-      - name: Test, lint, and build
-        working-directory: apps/android
-        run: |
-          python3 -m unittest discover -s scripts -p 'test_*.py'
-          ./gradlew --no-daemon :app:testDebugUnitTest :app:lintDebug :app:assembleDebug :app:assembleDebugAndroidTest
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
 
-  device-tests:
-    name: Android (device tests on an emulator)
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
+jobs:
+  desktop:
+    name: Desktop against a real backend
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CARGO_BUILD_JOBS: 2
+    permissions:
+      contents: read
+      attestations: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+      - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
         with:
-          distribution: temurin
-          java-version: '21'
-      # The emulator needs hardware acceleration, which the runner allows once its user can open /dev/kvm.
-      - name: Enable KVM
-        run: |
-          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-          sudo udevadm control --reload-rules
-          sudo udevadm trigger --name-match=kvm
-      - name: Accept SDK licenses and install platform
-        run: |
-          (yes || true) | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null
-          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-37.0" "platform-tools"
-      # The fixture tests only. The live smoke test skips itself without its opt-in arguments.
-      - uses: ReactiveCircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
+          version: 10
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          api-level: 34
-          arch: x86_64
-          target: google_apis
-          disable-animations: true
-          working-directory: apps/android
-          script: ./gradlew --no-daemon :app:connectedDebugAndroidTest
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: apps/desktop/pnpm-lock.yaml
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version-file: .bun-version
+      # Attested openab from openab-cache.yml on main; otherwise the next step compiles it.
+      - id: openab
+        uses: ./.github/actions/openab-binaries
+      - name: Build openab
+        if: steps.openab.outputs.hit != 'true'
+        working-directory: apps/desktop
+        run: node local-runtime/prepare.mjs --targets linux-x64 --require
+      - name: Install dependencies
+        run: |
+          bun install --frozen-lockfile
+          (cd apps/backend && bun install --frozen-lockfile)
+          (cd apps/desktop && pnpm install --frozen-lockfile)
+      # The scenarios' 60 s wait for MongoDB must not include a cold image pull (#3102).
+      # Keep the tags in step with MONGO_IMAGE in scripts/e2e/stack.ts and STORAGE_IMAGE in storage.ts.
+      - name: Pull the MongoDB and file store images
+        run: |
+          docker pull mongo:8.0.32
+          docker pull rustfs/rustfs:1.0.0
+      - name: Run the end-to-end scenarios
+        env:
+          E2E_ARTIFACTS: ${{ runner.temp }}/e2e
+        run: |
+          mkdir -p "$E2E_ARTIFACTS"
+          xvfb-run --auto-servernum bun scripts/e2e/bot-summary-evidence.ts
+      # Logs and a screenshot after each scenario; the database and the app's sign-in files are left out.
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
-        # Green runs keep the per-test report too, so a pull request can show that a test ran and passed.
-        if: ${{ !cancelled() }}
+        if: always()
         with:
-          name: android-device-tests
-          path: apps/android/app/build/reports/androidTests
+          name: bot-summary-evidence
+          path: |
+            ${{ runner.temp }}/e2e/*.png
+            ${{ runner.temp }}/e2e/evidence-result.json
           retention-days: 7
