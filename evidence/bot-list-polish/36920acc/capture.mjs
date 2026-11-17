@@ -1,0 +1,16 @@
+import {chromium} from '/private/tmp/bot-2963-evidence-tools/node_modules/playwright-core/index.mjs';
+import assert from 'node:assert/strict';
+const b=await chromium.launch({executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true});
+const page=await b.newPage({viewport:{width:1100,height:1050},deviceScaleFactor:2});page.on('pageerror',e=>console.log('PAGE ERROR',e.message));
+await page.goto('http://localhost:5281');await page.waitForSelector('#parent-row');await page.waitForTimeout(1000);
+console.log((await page.locator('body').innerText()).slice(0,500));
+await page.screenshot({path:'/tmp/bot-list-review-evidence/01-rest.png'});
+const parent=page.locator('#parent-row');const time=parent.locator('.sidebar-chat-time');assert.equal(await time.evaluate(e=>getComputedStyle(e).opacity),'0');
+let frame=0;const snap=async(n=6)=>{for(let i=0;i<n;i++){await page.screenshot({path:`/tmp/bot-list-review-evidence/frames/${String(frame++).padStart(4,'0')}.png`});await page.waitForTimeout(100)}};
+await snap();await parent.hover();await page.waitForTimeout(2500);assert.equal(await parent.locator('[id$=label]').evaluate(e=>e.scrollLeft),0);await snap();await page.screenshot({path:'/tmp/bot-list-review-evidence/02-hover.png'});
+await parent.getByRole('button',{name:'Show sub-agents',exact:true}).click();await page.locator('#sample-child').waitFor();await snap();await page.screenshot({path:'/tmp/bot-list-review-evidence/03-expanded.png'});
+await parent.getByRole('button',{name:'Hide sub-agents',exact:true}).click();await page.mouse.move(800,600);await snap();assert.equal(await time.evaluate(e=>getComputedStyle(e).opacity),'0');
+const bounds=await parent.evaluate(r=>{const n=r.querySelector('[id$="-note"]');const p=r.querySelector('[id$="-trailing"]').previousElementSibling;return [n.getBoundingClientRect().right,p.getBoundingClientRect().right]});assert.equal(bounds[0],bounds[1]);
+await page.locator('#loading-toggle').click();await page.mouse.move(800,600);await snap(12);const shimmer=page.locator('#working-row .t-shimmer');assert.equal(await shimmer.evaluate(e=>getComputedStyle(e,'::before').textOverflow),'ellipsis');await page.screenshot({path:'/tmp/bot-list-review-evidence/04-loading.png'});
+await page.locator('#theme-toggle').click();await page.mouse.move(800,600);await snap();await page.screenshot({path:'/tmp/bot-list-review-evidence/05-dark.png'});
+await page.locator('#theme-toggle').click();await page.mouse.move(1000,950);await page.screenshot({path:'/tmp/bot-list-review-evidence/only-finished.png'});await page.locator('#mixed-row').hover();await page.screenshot({path:'/tmp/bot-list-review-evidence/mixed-running-finished.png'});await page.mouse.move(1000,950);await page.screenshot({path:'/tmp/bot-list-review-evidence/folded-bot-tree.png'});await parent.hover();await page.waitForTimeout(2500);assert.equal(await parent.locator('[id$=label]').evaluate(e=>e.scrollLeft),0);await page.screenshot({path:'/tmp/bot-list-review-evidence/hover-single-chevron.png'});console.log('PASS: timestamps at rest, collapse focus regression, right-edge alignment, shimmer ellipsis; frames',frame);await b.close();
