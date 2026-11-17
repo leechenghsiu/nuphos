@@ -1,0 +1,11 @@
+{
+  "sourceHead": "6de7bfc4dba170dd3fd12d8a4b8e54e7801536ac",
+  "realElectron": true,
+  "realBackend": true,
+  "syntheticData": true,
+  "theme": "light",
+  "botScopedRows": 1,
+  "pendingQuestionInSummary": true,
+  "chatPopoverBefore": "closed",
+  "chatPopoverAfter": "closed"
+}
