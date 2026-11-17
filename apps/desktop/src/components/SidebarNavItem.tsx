@@ -84,7 +84,7 @@ function SwapLabel({ label }: { label: string }) {
 function RowLabel({ label, shimmer, swap }: { label: string; shimmer: boolean; swap: boolean }) {
   if (shimmer)
     return (
-      <span className="t-shimmer max-w-full truncate align-top" data-text={label}>
+      <span className="t-shimmer max-w-full truncate align-top before:truncate" data-text={label}>
         {label}
       </span>
     )
@@ -138,7 +138,7 @@ export function SidebarNavItem({
   // A chat-list row shows its state on the preview line instead, and its time here.
   const rest = twoLine
     ? time && (
-        <span className="text-[11px] font-normal tabular-nums text-tertiary opacity-75">
+        <span className="sidebar-chat-time text-[11px] font-normal tabular-nums text-tertiary opacity-75">
           {time}
         </span>
       )
@@ -174,7 +174,7 @@ export function SidebarNavItem({
   )
   const tail = (
     <>
-      {note != null && (
+      {!twoLine && note != null && (
         // A note that renders nothing (no phone viewing) takes no space or gap.
         <span id={`${id}-note`} className="flex flex-shrink-0 items-center empty:hidden">
           {note}
@@ -191,12 +191,18 @@ export function SidebarNavItem({
           overlay={twoLine}
         />
       </Fenced>
+      {twoLine && note != null && (
+        <span id={`${id}-note`} className="flex flex-shrink-0 items-center empty:hidden">
+          {note}
+        </span>
+      )}
       <Fenced>{edge}</Fenced>
     </>
   )
 
   return (
     <BaseButton
+      title={twoLine ? time : undefined}
       disabled={disabled}
       // Inside a sidebar row the row starts the scroll; restarting here would reset it.
       draggable={navigateOnRelease}
@@ -272,7 +278,7 @@ export function SidebarNavItem({
               >
                 {preview || t('No messages yet')}
               </span>
-              <span id={`${id}-trailing`} className="flex-shrink-0 flex items-center">
+              <span id={`${id}-trailing`} className="flex-shrink-0 flex items-center empty:hidden">
                 {trailing}
               </span>
             </span>

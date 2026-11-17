@@ -2503,3 +2503,15 @@ html.light .workspace-desk {
     transition: none;
   }
 }
+
+/* Keep chat timestamps quiet until the row is inspected, without shifting its layout. */
+@media (hover: hover) and (pointer: fine) {
+  .sidebar-chat-time {
+    opacity: 0;
+  }
+
+  [data-sidebar-row]:is(:hover, :focus-visible, :has(:focus-visible)) .sidebar-chat-time,
+  .group\/row:is(:hover, :focus-visible, :has(:focus-visible)) .sidebar-chat-time {
+    opacity: 0.75;
+  }
+}
