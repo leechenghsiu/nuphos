@@ -1,0 +1,45 @@
+{
+  "applicationRevision": "6b85c763a03c973ca42f7c71bc724c7738f6172c",
+  "testHarnessRevision": "2f8ab009bb7ad677a3bd83d7a3e7601c6524decc",
+  "devices": [
+    {
+      "modelName": "iPad Pro 13-inch (M5)",
+      "osVersion": "27.2",
+      "osBuildNumber": "24B8117",
+      "platform": "iOS Simulator",
+      "architecture": "arm64"
+    }
+  ],
+  "summary": {
+    "Failed": 2
+  },
+  "total": 2,
+  "tests": [
+    {
+      "id": "HomeTabsUITests/testDestinationsAndWideComposerEvidence()",
+      "result": "Failed",
+      "durationSeconds": 94.93197500705719,
+      "failureLocations": [
+        {
+          "file": "HomeTabsUITests.swift",
+          "line": 197
+        }
+      ]
+    },
+    {
+      "id": "HomeTabsUITests/testHomeToolbarKeepsActionsVisibleWithLongTeamName()",
+      "result": "Failed",
+      "durationSeconds": 64.3298989534378,
+      "failureLocations": [
+        {
+          "file": "HomeTabsUITests.swift",
+          "line": 22
+        },
+        {
+          "file": "HomeTabsUITests.swift",
+          "line": 29
+        }
+      ]
+    }
+  ]
+}
