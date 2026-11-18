@@ -1,0 +1,13 @@
+Diagnostic run only, not the original full message-menu test.
+Application sources: identical to PR base 6b85c763a03c973ca42f7c71bc724c7738f6172c.
+Harness: head 2f8ab009, ChannelMessageMenu test renamed testHomeLinkComposerDiagnostic and shortened after its original line30 XCTUnwrap to XCTAssertTrue(composer.isHittable). Launch arguments, fixture setup, transcript wait and composer lookup are unchanged. No production instrumentation was added.
+iPhone17Pro / iOS27.2 (24B8117), same simulator as head full run.
+Planned10 repetitions; interrupted after reproducing the exact original startup failure. Two completed repetitions: first failed line30 after19.642s, second passed after24.455s. Third incomplete. Do not interpret as ten completed repetitions or a pass of the full menu/copy test.
+Interruption caused Xcode internal cleanup errors; the result bundle is incomplete. This file preserves the completed per-test console results instead. Both modified source files were restored; git diff empty afterward.
+
+Test Case '-[nuphos_iosUITests.ChannelMessageMenuUITests testHomeLinkComposerDiagnostic]' started (Iteration 1 of 10).
+UITests/ChannelMessageMenuUITests.swift:30: error: -[nuphos_iosUITests.ChannelMessageMenuUITests testHomeLinkComposerDiagnostic] : XCTUnwrap failed: expected non-nil value of type "XCUIElement"
+Test Case '-[nuphos_iosUITests.ChannelMessageMenuUITests testHomeLinkComposerDiagnostic]' failed (19.642 seconds).
+Test Case '-[nuphos_iosUITests.ChannelMessageMenuUITests testHomeLinkComposerDiagnostic]' started (Iteration 2 of 10).
+Test Case '-[nuphos_iosUITests.ChannelMessageMenuUITests testHomeLinkComposerDiagnostic]' passed (24.455 seconds).
+Test Case '-[nuphos_iosUITests.ChannelMessageMenuUITests testHomeLinkComposerDiagnostic]' started (Iteration 3 of 10).
