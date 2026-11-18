@@ -1,0 +1,9 @@
+{
+  "apps/ios/UITests/HostedBotAvatarUITests.swift": "66adad6552f397c268d161bc655838e076c47f723d591336b655fd1904efb916",
+  "apps/ios/tests/HostedBotAvatarTests.swift": "d75065eca10e43832a5d5d98c9a6f1f878f5d252a2ad5a59f372dc692edc6032",
+  "apps/ios/tests/fixtures/hosted-bot-avatars.json": "f04f94431b8093fb2a8fd72b24f63f56a07dc8ad710f4094ae698cbe1111b381",
+  "apps/ios/BotAvatars/BotAvatars.swift": "63b0db2588d434687e81bb02ded1ab6f21663f7e2230e878df1038158ddf550f",
+  "apps/ios/nuphos-ios/Services/PreviewTransport.swift": "0acefdfd263683ccbd7ed590a082c42d3494c4228c9c9fe125a39ee23ea842c0",
+  "apps/ios/nuphos-ios/Views/Components/AgentAvatar.swift": "fdc4ec63d45d479eee880d76bbe2b7769314390341607fb71635ee156bad1cb6",
+  "apps/ios/tests/run.sh": "fac0536f7c3971f1b3d40f08421ee4ff9e393d0ba5b9716ab594f94b06795334"
+}
