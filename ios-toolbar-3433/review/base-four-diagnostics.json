@@ -1,0 +1,39 @@
+{
+  "applicationRevision": "6b85c763a",
+  "testHarnessRevision": "6b85c763a",
+  "devices": [
+    {
+      "modelName": "iPhone 17 Pro",
+      "osVersion": "27.2",
+      "osBuildNumber": "24B8117",
+      "platform": "iOS Simulator",
+      "architecture": "arm64"
+    }
+  ],
+  "summary": {
+    "Passed": 4
+  },
+  "total": 4,
+  "tests": [
+    {
+      "id": "ChannelMessageMenuUITests/testBubbleMenuAndPartialCopy()",
+      "result": "Passed",
+      "durationSeconds": 42.63569796085358
+    },
+    {
+      "id": "ComposerReturnUITests/testLastLineFillingTheWidth()",
+      "result": "Passed",
+      "durationSeconds": 38.89593505859375
+    },
+    {
+      "id": "DockPanelUITests/testAPageTheIPhoneDoesNotHaveOpensOnTheMac()",
+      "result": "Passed",
+      "durationSeconds": 158.39466190338135
+    },
+    {
+      "id": "VoiceInputUITests/testStopAndSendInAChat()",
+      "result": "Passed",
+      "durationSeconds": 52.27250099182129
+    }
+  ]
+}

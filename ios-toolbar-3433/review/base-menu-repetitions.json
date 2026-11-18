@@ -1,0 +1,48 @@
+{
+  "applicationRevision": "6b85c763a",
+  "testHarnessRevision": "2f8ab009",
+  "devices": [
+    {
+      "modelName": "iPhone 17 Pro",
+      "osVersion": "27.2",
+      "osBuildNumber": "24B8117",
+      "platform": "iOS Simulator",
+      "architecture": "arm64"
+    }
+  ],
+  "summary": {
+    "Failed": 1
+  },
+  "total": 1,
+  "tests": [
+    {
+      "id": "ChannelMessageMenuUITests/testBubbleMenuAndPartialCopy()",
+      "result": "Failed",
+      "durationSeconds": 56.089174350102745,
+      "failureLocations": [
+        {
+          "file": "ChannelMessageMenuUITests.swift",
+          "line": 36
+        },
+        {
+          "file": "ChannelMessageMenuUITests.swift",
+          "line": 36
+        }
+      ],
+      "repetitions": [
+        {
+          "result": "Passed",
+          "durationSeconds": 56.687870025634766
+        },
+        {
+          "result": "Failed",
+          "durationSeconds": 75.31629407405853
+        },
+        {
+          "result": "Failed",
+          "durationSeconds": 36.26335895061493
+        }
+      ]
+    }
+  ]
+}

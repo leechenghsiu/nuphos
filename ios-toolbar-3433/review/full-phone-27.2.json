@@ -1,0 +1,693 @@
+{
+  "applicationRevision": "2f8ab009",
+  "testHarnessRevision": "2f8ab009",
+  "devices": [
+    {
+      "modelName": "iPhone 17 Pro",
+      "osVersion": "27.2",
+      "osBuildNumber": "24B8117",
+      "platform": "iOS Simulator",
+      "architecture": "arm64"
+    }
+  ],
+  "summary": {
+    "Passed": 79,
+    "Failed": 20,
+    "Skipped": 5
+  },
+  "total": 104,
+  "tests": [
+    {
+      "id": "AccountNavigationUITests/testAccountScopesAndProfileEditing()",
+      "result": "Passed",
+      "durationSeconds": 35.40371096134186
+    },
+    {
+      "id": "AccountNavigationUITests/testDangerZoneKeepsDeletionSeparateFromAccountSignOut()",
+      "result": "Passed",
+      "durationSeconds": 22.776807069778442
+    },
+    {
+      "id": "AccountNavigationUITests/testNoRuntimeOffersSetupAndDisablesCreate()",
+      "result": "Passed",
+      "durationSeconds": 15.182111978530884
+    },
+    {
+      "id": "AccountNavigationUITests/testNoWorkspaceDoesNotLeaveInboxOrComputersLoading()",
+      "result": "Passed",
+      "durationSeconds": 16.96448302268982
+    },
+    {
+      "id": "AgentListFailureUITests/testAFailureFromTheLastWorkspaceDoesNotShowAfterComingBack()",
+      "result": "Failed",
+      "durationSeconds": 16.69931197166443,
+      "failureLocations": [
+        {
+          "file": "AgentListFailureUITests.swift",
+          "line": 179
+        }
+      ]
+    },
+    {
+      "id": "AgentListFailureUITests/testAFailureFromTheLastWorkspaceDoesNotShowInTheNextOne()",
+      "result": "Failed",
+      "durationSeconds": 15.570204019546509,
+      "failureLocations": [
+        {
+          "file": "AgentListFailureUITests.swift",
+          "line": 179
+        }
+      ]
+    },
+    {
+      "id": "AgentListFailureUITests/testAWriteOnItsWayCannotBeRepeated()",
+      "result": "Failed",
+      "durationSeconds": 17.36698305606842,
+      "failureLocations": [
+        {
+          "file": "AgentListFailureUITests.swift",
+          "line": 179
+        }
+      ]
+    },
+    {
+      "id": "AgentListFailureUITests/testFailedReadKeepsTheRowsAndTheListKeepsPolling()",
+      "result": "Failed",
+      "durationSeconds": 15.958631038665771,
+      "failureLocations": [
+        {
+          "file": "AgentListFailureUITests.swift",
+          "line": 179
+        }
+      ]
+    },
+    {
+      "id": "AgentListFailureUITests/testFailedWriteKeepsTheListAndRetries()",
+      "result": "Failed",
+      "durationSeconds": 15.844512939453125,
+      "failureLocations": [
+        {
+          "file": "AgentListFailureUITests.swift",
+          "line": 179
+        }
+      ]
+    },
+    {
+      "id": "AgentListFailureUITests/testPullToRefreshKeepsTheListWhenItFails()",
+      "result": "Passed",
+      "durationSeconds": 21.038126945495605
+    },
+    {
+      "id": "AgentListFailureUITests/testTryAgainReadsAFailedListAgain()",
+      "result": "Passed",
+      "durationSeconds": 20.991607069969177
+    },
+    {
+      "id": "AgentSummaryUITests/testSummaryEmptyStateDoesNotShowWorkspaceNavigation()",
+      "result": "Passed",
+      "durationSeconds": 16.457234025001526
+    },
+    {
+      "id": "AgentSummaryUITests/testSummaryShowsConversationContextWithoutMacDock()",
+      "result": "Passed",
+      "durationSeconds": 23.105988025665283
+    },
+    {
+      "id": "AnsweredQuestionUITests/testAnAnswerWaitingForItsAgentSaysWhy()",
+      "result": "Passed",
+      "durationSeconds": 12.23670494556427
+    },
+    {
+      "id": "AnsweredQuestionUITests/testAnsweredQuestionsAreOneLineEachAndOpenToTheirCard()",
+      "result": "Failed",
+      "durationSeconds": 15.17464303970337,
+      "failureLocations": [
+        {
+          "file": "AnsweredQuestionUITests.swift",
+          "line": 69
+        }
+      ]
+    },
+    {
+      "id": "AttachmentMediaUITests/testBarButtonsTakeTapsOffTheirGlyphs()",
+      "result": "Failed",
+      "durationSeconds": 28.868226051330566,
+      "failureLocations": [
+        {
+          "file": "AttachmentMediaUITests.swift",
+          "line": 67
+        }
+      ]
+    },
+    {
+      "id": "AttachmentMediaUITests/testCloseButtonClosesViewer()",
+      "result": "Passed",
+      "durationSeconds": 22.989312052726746
+    },
+    {
+      "id": "AttachmentMediaUITests/testImageOpensWithoutWaitingForVideo()",
+      "result": "Passed",
+      "durationSeconds": 26.047379970550537
+    },
+    {
+      "id": "AttachmentMediaUITests/testVideoOpensItselfAndSwipesToImages()",
+      "result": "Failed",
+      "durationSeconds": 44.620697021484375,
+      "failureLocations": [
+        {
+          "file": "AttachmentMediaUITests.swift",
+          "line": 19
+        },
+        {
+          "file": "AttachmentMediaUITests.swift",
+          "line": 20
+        },
+        {
+          "file": "AttachmentMediaUITests.swift",
+          "line": 23
+        },
+        {
+          "file": "AttachmentMediaUITests.swift",
+          "line": 24
+        },
+        {
+          "file": "AttachmentMediaUITests.swift",
+          "line": 26
+        },
+        {
+          "file": "AttachmentMediaUITests.swift",
+          "line": 27
+        },
+        {
+          "file": "AttachmentMediaUITests.swift",
+          "line": 29
+        }
+      ]
+    },
+    {
+      "id": "AttachmentMediaUITests/testVideoThatFailsToLoadSaysSo()",
+      "result": "Passed",
+      "durationSeconds": 19.97966492176056
+    },
+    {
+      "id": "BotDesktopUITests/testDesktopButtonOnlyForBotWithDesktop()",
+      "result": "Passed",
+      "durationSeconds": 16.9753839969635
+    },
+    {
+      "id": "BotMentionUITests/testAtOffersOtherBotsByName()",
+      "result": "Passed",
+      "durationSeconds": 19.009807109832764
+    },
+    {
+      "id": "BotPinsUITests/testBotTaskReturnsToItsChat()",
+      "result": "Passed",
+      "durationSeconds": 36.69788300991058
+    },
+    {
+      "id": "BotPinsUITests/testLongPressingSecondPinUsesItsOwnConversation()",
+      "result": "Passed",
+      "durationSeconds": 27.654876947402954
+    },
+    {
+      "id": "BotPinsUITests/testPinnedShelfAndUnpinKeepConversationInRecentList()",
+      "result": "Passed",
+      "durationSeconds": 23.363765001296997
+    },
+    {
+      "id": "BotRuntimeAvatarUITests/testAllHumanGroup()",
+      "result": "Passed",
+      "durationSeconds": 28.981348037719727
+    },
+    {
+      "id": "BotRuntimeAvatarUITests/testBotWithMissingRuntime()",
+      "result": "Passed",
+      "durationSeconds": 31.51607096195221
+    },
+    {
+      "id": "BotRuntimeAvatarUITests/testFrontBotAndHuman()",
+      "result": "Passed",
+      "durationSeconds": 30.266626000404358
+    },
+    {
+      "id": "BotRuntimeAvatarUITests/testRearBotAndHuman()",
+      "result": "Passed",
+      "durationSeconds": 32.98360788822174
+    },
+    {
+      "id": "BotRuntimeAvatarUITests/testTwoBotsHaveTheirOwnProviders()",
+      "result": "Passed",
+      "durationSeconds": 42.966031074523926
+    },
+    {
+      "id": "BotRuntimeAvatarUITests/testTypingUsesTheActualBotProvider()",
+      "result": "Passed",
+      "durationSeconds": 32.55812203884125
+    },
+    {
+      "id": "BotsAndTasksListUITests/testBotsKeepWhatWasOpenedByHand()",
+      "result": "Passed",
+      "durationSeconds": 39.11371994018555
+    },
+    {
+      "id": "BotsAndTasksListUITests/testBotsListWhatTheirBotsDispatched()",
+      "result": "Failed",
+      "durationSeconds": 21.86941707134247,
+      "failureLocations": [
+        {
+          "file": "BotsAndTasksListUITests.swift",
+          "line": 80
+        }
+      ]
+    },
+    {
+      "id": "BotsAndTasksListUITests/testTasksLeaveOutBotsAndWhatTheyDispatched()",
+      "result": "Passed",
+      "durationSeconds": 19.371352076530457
+    },
+    {
+      "id": "BotsAndTasksListUITests/testWhatTheInboxOpensReturnsToItsList()",
+      "result": "Passed",
+      "durationSeconds": 81.65576696395874
+    },
+    {
+      "id": "ChannelMessageMenuUITests/testBubbleMenuAndPartialCopy()",
+      "result": "Failed",
+      "durationSeconds": 20.828783988952637,
+      "failureLocations": [
+        {
+          "file": "ChannelMessageMenuUITests.swift",
+          "line": 30
+        }
+      ]
+    },
+    {
+      "id": "ChannelReadUITests/testPostWhileOpenIsRead()",
+      "result": "Passed",
+      "durationSeconds": 37.58429300785065
+    },
+    {
+      "id": "ChannelReopenUITests/testSecondChannelFromListLoads()",
+      "result": "Passed",
+      "durationSeconds": 30.373112082481384
+    },
+    {
+      "id": "ChannelWakeLineUITests/testWakeLineNamesTheNewestPost()",
+      "result": "Passed",
+      "durationSeconds": 20.075818061828613
+    },
+    {
+      "id": "ChatAttachmentRetryUITests/testFilesShowAfterAFailedFirstRead()",
+      "result": "Passed",
+      "durationSeconds": 33.51908600330353
+    },
+    {
+      "id": "ChatComposerLayoutUITests/testNothingShowsBehindTheComposer()",
+      "result": "Failed",
+      "durationSeconds": 49.66493105888367,
+      "failureLocations": [
+        {
+          "file": "ChatComposerLayoutUITests.swift",
+          "line": 14
+        },
+        {
+          "file": "ChatComposerLayoutUITests.swift",
+          "line": 26
+        }
+      ]
+    },
+    {
+      "id": "ChatReopenUITests/testSecondChatFromListLoads()",
+      "result": "Passed",
+      "durationSeconds": 40.399706959724426
+    },
+    {
+      "id": "CodeBlockWidthUITests/testCodeBlockTakesTheReplyWidth()",
+      "result": "Passed",
+      "durationSeconds": 25.693120002746582
+    },
+    {
+      "id": "ComposerReturnUITests/testFieldGrowsScrollsAndPastes()",
+      "result": "Passed",
+      "durationSeconds": 80.46488010883331
+    },
+    {
+      "id": "ComposerReturnUITests/testLastLineFillingTheWidth()",
+      "result": "Failed",
+      "durationSeconds": 39.48121500015259,
+      "failureLocations": [
+        {
+          "file": "ComposerReturnUITests.swift",
+          "line": 125
+        }
+      ]
+    },
+    {
+      "id": "ComposerReturnUITests/testOnScreenReturnTypesALine()",
+      "result": "Passed",
+      "durationSeconds": 34.83342897891998
+    },
+    {
+      "id": "ComposerReturnUITests/testReturnCommitsMarkedText()",
+      "result": "Skipped",
+      "durationSeconds": 0.15082097053527832
+    },
+    {
+      "id": "ComposerReturnUITests/testReturnSendsAndKeepsFocus()",
+      "result": "Skipped",
+      "durationSeconds": 0.044432997703552246
+    },
+    {
+      "id": "ComposerReturnUITests/testReturnWhileComposingKeepsTheText()",
+      "result": "Skipped",
+      "durationSeconds": 0.04276001453399658
+    },
+    {
+      "id": "ConversationTriggersUITests/testConversationTitleOpensTriggers()",
+      "result": "Passed",
+      "durationSeconds": 35.86998701095581
+    },
+    {
+      "id": "DockPanelUITests/testABrowserTabOpensNativelyOnThePhoneWithTheMacOneMenuAway()",
+      "result": "Passed",
+      "durationSeconds": 172.524719953537
+    },
+    {
+      "id": "DockPanelUITests/testAPageOnTheMacsNetworkLoadsThroughTheMac()",
+      "result": "Passed",
+      "durationSeconds": 186.88205003738403
+    },
+    {
+      "id": "DockPanelUITests/testAPageTheIPhoneDoesNotHaveOpensOnTheMac()",
+      "result": "Failed",
+      "durationSeconds": 37.10626208782196,
+      "failureLocations": [
+        {
+          "file": "DockPanelUITests.swift",
+          "line": 24
+        }
+      ]
+    },
+    {
+      "id": "DockPanelUITests/testClosingATabOnThePhoneClosesItInTheStrip()",
+      "result": "Failed",
+      "durationSeconds": 168.93611299991608,
+      "failureLocations": [
+        {
+          "file": "DockPanelUITests.swift",
+          "line": 92
+        }
+      ]
+    },
+    {
+      "id": "DockPanelUITests/testWorkToolsOpensTheMacDockAndItsNewTabPage()",
+      "result": "Passed",
+      "durationSeconds": 155.04029297828674
+    },
+    {
+      "id": "EmptyChatUITests/testChatWithPostsShowsNoPlaceholder()",
+      "result": "Passed",
+      "durationSeconds": 29.211267948150635
+    },
+    {
+      "id": "EmptyChatUITests/testEmptyBotChatWithALongNameFitsAboveTheKeyboard()",
+      "result": "Passed",
+      "durationSeconds": 27.82450795173645
+    },
+    {
+      "id": "EmptyChatUITests/testEmptyBotChatWithALongNameSitsBelowTheBar()",
+      "result": "Passed",
+      "durationSeconds": 34.26787710189819
+    },
+    {
+      "id": "EmptyChatUITests/testEmptyGroupFitsAboveTheKeyboard()",
+      "result": "Passed",
+      "durationSeconds": 24.70587396621704
+    },
+    {
+      "id": "EmptyChatUITests/testEmptyGroupSitsBelowTheBar()",
+      "result": "Passed",
+      "durationSeconds": 41.522891998291016
+    },
+    {
+      "id": "EmptyChatUITests/testMadeBotChatFitsAboveTheKeyboard()",
+      "result": "Failed",
+      "durationSeconds": 28.017732977867126,
+      "failureLocations": [
+        {
+          "file": "EmptyChatUITests.swift",
+          "line": 108
+        }
+      ]
+    },
+    {
+      "id": "EmptyChatUITests/testMakeThisABotOpensItsChatBelowTheBar()",
+      "result": "Failed",
+      "durationSeconds": 35.135615944862366,
+      "failureLocations": [
+        {
+          "file": "EmptyChatUITests.swift",
+          "line": 108
+        }
+      ]
+    },
+    {
+      "id": "HomeTabsUITests/testDestinationsAndWideComposerEvidence()",
+      "result": "Passed",
+      "durationSeconds": 62.80804800987244
+    },
+    {
+      "id": "HomeTabsUITests/testExistingBotAndTaskFocusComposerOnOpen()",
+      "result": "Passed",
+      "durationSeconds": 39.72063994407654
+    },
+    {
+      "id": "HomeTabsUITests/testHomeToolbarKeepsActionsVisibleWithLongTeamName()",
+      "result": "Passed",
+      "durationSeconds": 39.0618439912796
+    },
+    {
+      "id": "HomeTabsUITests/testNativeTabsExposeWorkspacePagesAndOpenChats()",
+      "result": "Passed",
+      "durationSeconds": 56.19338393211365
+    },
+    {
+      "id": "HomeTabsUITests/testNewTaskSheetPreservesDraftOnCancel()",
+      "result": "Passed",
+      "durationSeconds": 30.922763109207153
+    },
+    {
+      "id": "HomeTabsUITests/testNewTaskSubmissionDismissesSheetAndOpensConversation()",
+      "result": "Passed",
+      "durationSeconds": 28.715299010276794
+    },
+    {
+      "id": "HomeTabsUITests/testTaskDraftSurvivesTabSwitch()",
+      "result": "Passed",
+      "durationSeconds": 42.29781401157379
+    },
+    {
+      "id": "InboxUITests/testABotChatAsksForASecretWithTheSecureInputCard()",
+      "result": "Passed",
+      "durationSeconds": 27.325589060783386
+    },
+    {
+      "id": "InboxUITests/testABotChatCardLeadsWithTheQuestionAndSkips()",
+      "result": "Passed",
+      "durationSeconds": 24.946095943450928
+    },
+    {
+      "id": "InboxUITests/testABotChatIntegrationQuestionChoosesCredentialsOnItsCard()",
+      "result": "Passed",
+      "durationSeconds": 25.446052074432373
+    },
+    {
+      "id": "InboxUITests/testABotsTaskQuestionIsInTheBotsGroup()",
+      "result": "Passed",
+      "durationSeconds": 16.097564935684204
+    },
+    {
+      "id": "InboxUITests/testAnIntegrationQuestionChoosesCredentialsInTheInbox()",
+      "result": "Passed",
+      "durationSeconds": 42.539780020713806
+    },
+    {
+      "id": "InboxUITests/testAnIntegrationQuestionOffersItsProvidersAndOneNamingNoneTakesWords()",
+      "result": "Passed",
+      "durationSeconds": 66.7019100189209
+    },
+    {
+      "id": "InboxUITests/testAnswersAQuestionFromTheInbox()",
+      "result": "Passed",
+      "durationSeconds": 50.43074595928192
+    },
+    {
+      "id": "InboxUITests/testAnswersInWordsWithOther()",
+      "result": "Passed",
+      "durationSeconds": 38.11413300037384
+    },
+    {
+      "id": "InboxUITests/testAnswersSeveralQuestionsInOneCard()",
+      "result": "Passed",
+      "durationSeconds": 31.26567304134369
+    },
+    {
+      "id": "InboxUITests/testOtherAnswersInWordsInABotChat()",
+      "result": "Passed",
+      "durationSeconds": 36.32651901245117
+    },
+    {
+      "id": "InboxUITests/testTheInboxAsksForASecretWithTheSecureInputCard()",
+      "result": "Passed",
+      "durationSeconds": 19.28181791305542
+    },
+    {
+      "id": "IntegrationQuestionUITests/testQuestionOpensTheExistingCredentialPicker()",
+      "result": "Passed",
+      "durationSeconds": 23.19895899295807
+    },
+    {
+      "id": "LoginUITests/testAddingAccountStartsWithAnEmptyEmailForm()",
+      "result": "Failed",
+      "durationSeconds": 25.95805597305298,
+      "failureLocations": [
+        {
+          "file": "LoginUITests.swift",
+          "line": 76
+        }
+      ]
+    },
+    {
+      "id": "LoginUITests/testEmailCodeAutomaticallyVerifiesAndCanRetryAndChangeAddress()",
+      "result": "Passed",
+      "durationSeconds": 20.728816986083984
+    },
+    {
+      "id": "LoginUITests/testPasswordIsASecondaryPathOnTheSameScreen()",
+      "result": "Passed",
+      "durationSeconds": 16.89410698413849
+    },
+    {
+      "id": "LoginUITests/testProviderButtonsAndEmailAreReachable()",
+      "result": "Passed",
+      "durationSeconds": 10.355372905731201
+    },
+    {
+      "id": "LoginUITests/testVerificationBackPreservesEmail()",
+      "result": "Passed",
+      "durationSeconds": 16.397069931030273
+    },
+    {
+      "id": "MarkdownImageUITests/testFailedImageOffersRetry()",
+      "result": "Skipped",
+      "durationSeconds": 0.05546605587005615
+    },
+    {
+      "id": "MarkdownImageUITests/testRemoteImageShowsInViewer()",
+      "result": "Skipped",
+      "durationSeconds": 0.04699599742889404
+    },
+    {
+      "id": "NewBotFailureUITests/testNewBotThatFailsStaysOpenAndRetryOpensTheChat()",
+      "result": "Failed",
+      "durationSeconds": 19.666823029518127,
+      "failureLocations": [
+        {
+          "file": "NewBotFailureUITests.swift",
+          "line": 57
+        }
+      ]
+    },
+    {
+      "id": "NewBotFailureUITests/testOpeningABotWhoseChatFailsReportsItAndRetryOpensIt()",
+      "result": "Passed",
+      "durationSeconds": 15.215404033660889
+    },
+    {
+      "id": "NotificationAvatarUITests/testChosenFaceAndEveryKnownProviderUseTheActualSharedBitmapRenderer()",
+      "result": "Passed",
+      "durationSeconds": 0.24889600276947021
+    },
+    {
+      "id": "NotificationAvatarUITests/testTaskLegacyAndUnknownPayloadsNeverInventIdentity()",
+      "result": "Passed",
+      "durationSeconds": 0.10382997989654541
+    },
+    {
+      "id": "RuntimeOfflineUITests/testAnOfflineComputerOffersAnotherRuntimeBeforeSending()",
+      "result": "Passed",
+      "durationSeconds": 16.63900399208069
+    },
+    {
+      "id": "RuntimeOfflineUITests/testAnOnlineComputerSaysNothing()",
+      "result": "Passed",
+      "durationSeconds": 15.87248694896698
+    },
+    {
+      "id": "RuntimesDesktopUITests/testDesktopButtonFollowsTheDeviceList()",
+      "result": "Failed",
+      "durationSeconds": 28.067626953125,
+      "failureLocations": [
+        {
+          "file": "RuntimesDesktopUITests.swift",
+          "line": 17
+        },
+        {
+          "file": "RuntimesDesktopUITests.swift",
+          "line": 18
+        }
+      ]
+    },
+    {
+      "id": "SecretFormUITests/testAFormsDetailsAreTypedRevealedAndSent()",
+      "result": "Passed",
+      "durationSeconds": 23.192333102226257
+    },
+    {
+      "id": "StopRefusedUITests/testARefusedStopShowsWhileReadingOlderMessages()",
+      "result": "Passed",
+      "durationSeconds": 28.992350935935974
+    },
+    {
+      "id": "StopRefusedUITests/testAStopTheRuntimeNeverHeardSaysTheTurnWasStoppedHere()",
+      "result": "Passed",
+      "durationSeconds": 28.153610110282898
+    },
+    {
+      "id": "TurnRetryUITests/testAFailedTurnOffersRetryAndCopy()",
+      "result": "Passed",
+      "durationSeconds": 21.127827048301697
+    },
+    {
+      "id": "TwoFactorUITests/testAnActionThatNeedsACodeAsksBeforeRetrying()",
+      "result": "Passed",
+      "durationSeconds": 20.23711395263672
+    },
+    {
+      "id": "TwoFactorUITests/testASignInThatNeedsACodeAsksForIt()",
+      "result": "Passed",
+      "durationSeconds": 17.81431806087494
+    },
+    {
+      "id": "TwoFactorUITests/testTurningItOnShowsTheKeyThenTheRecoveryCodes()",
+      "result": "Passed",
+      "durationSeconds": 23.19672703742981
+    },
+    {
+      "id": "VoiceInputUITests/testStopAndSendInAChat()",
+      "result": "Failed",
+      "durationSeconds": 692.2434519529343,
+      "failureLocations": [
+        {
+          "file": "VoiceInputUITests.swift",
+          "line": 54
+        }
+      ]
+    },
+    {
+      "id": "VoicePromptUITests/testShowsTheDefaultUntilEdited()",
+      "result": "Passed",
+      "durationSeconds": 25.681562900543213
+    }
+  ]
+}
