@@ -1,0 +1,18 @@
+{
+  "base": "43f54aeaeca7500129ad3bae065997aa1e49dbb6",
+  "localChanges": "file-manifest.json",
+  "os": "26.4",
+  "device": "iPhone 17 Pro",
+  "tests": [
+    {
+      "test": "ChannelReopenUITests/testSecondChannelFromListLoads()",
+      "result": "Passed",
+      "seconds": 31.253412008285522
+    },
+    {
+      "test": "ChatReopenUITests/testSecondChatFromListLoads()",
+      "result": "Passed",
+      "seconds": 12.17346203327179
+    }
+  ]
+}

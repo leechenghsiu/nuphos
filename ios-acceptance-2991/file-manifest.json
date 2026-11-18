@@ -1,0 +1,10 @@
+{
+  "apps/ios/UITests/AccountNavigationUITests.swift": "4a9d1e95ee61adb8f093e36f5050890d00d2b0950359ecdd411231d12cc452eb",
+  "apps/ios/UITests/ChannelReopenUITests.swift": "405304fceb9d0c1242640a6dfeb4a1b9d605e8ea7d3d2d6c88652b72707dcbaa",
+  "apps/ios/UITests/ChatReopenUITests.swift": "a643b640f0fb09176ea95686ee7b369c61e6bdfee8396923c734f1d576d80b8c",
+  "apps/ios/UITests/HomeTabsUITests.swift": "b221b7ceeeb119acfa87f3f1a4c82f975bc097d5a1cce8bd3657cce1af80aa7c",
+  "apps/ios/UITests/InboxUITests.swift": "a869fe95d5a7968f7684485d1f801c15f1e369fedb9580d56d2adf2757d0bd28",
+  "apps/ios/nuphos-ios/Services/AuthSession.swift": "49fdf364fec5362b48061d0a4fbed1a76c17a6b75b0299270d29e61acea082b8",
+  "apps/ios/nuphos-ios/Views/Chat/AssistantMarkdown.swift": "99da553f84b7239114ab263ec9c8788cc4202a63daa774af0756d3c300680455",
+  "apps/ios/nuphos-ios/Views/SavedAccountsView.swift": "4da6309eef63c5d5812f1637b69aaa63392789b6f5e0649657059dbb8449003f"
+}

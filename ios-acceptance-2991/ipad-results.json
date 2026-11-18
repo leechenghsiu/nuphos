@@ -1,0 +1,53 @@
+{
+  "base": "43f54aeaeca7500129ad3bae065997aa1e49dbb6",
+  "localChanges": "file-manifest.json",
+  "os": "26.4",
+  "device": "iPad Pro 13-inch (M5)",
+  "tests": [
+    {
+      "test": "AccountNavigationUITests/testAccountScopesAndProfileEditing()",
+      "result": "Passed",
+      "seconds": 40.15300500392914
+    },
+    {
+      "test": "AccountNavigationUITests/testDangerZoneKeepsDeletionSeparateFromAccountSignOut()",
+      "result": "Passed",
+      "seconds": 23.406987071037292
+    },
+    {
+      "test": "AccountNavigationUITests/testNoRuntimeOffersSetupAndDisablesCreate()",
+      "result": "Passed",
+      "seconds": 19.93192207813263
+    },
+    {
+      "test": "AccountNavigationUITests/testNoWorkspaceDoesNotLeaveInboxOrComputersLoading()",
+      "result": "Passed",
+      "seconds": 22.555379986763
+    },
+    {
+      "test": "ChannelReopenUITests/testSecondChannelFromListLoads()",
+      "result": "Passed",
+      "seconds": 17.401800990104675
+    },
+    {
+      "test": "ChatReopenUITests/testSecondChatFromListLoads()",
+      "result": "Passed",
+      "seconds": 13.058861017227173
+    },
+    {
+      "test": "HomeTabsUITests/testNativeTabsExposeWorkspacePagesAndOpenChats()",
+      "result": "Passed",
+      "seconds": 43.5902099609375
+    },
+    {
+      "test": "InboxUITests/testAnIntegrationQuestionOffersItsProvidersAndOneNamingNoneTakesWords()",
+      "result": "Passed",
+      "seconds": 56.86707603931427
+    },
+    {
+      "test": "LoginUITests/testAddingAccountStartsWithAnEmptyEmailForm()",
+      "result": "Passed",
+      "seconds": 28.393882036209106
+    }
+  ]
+}
