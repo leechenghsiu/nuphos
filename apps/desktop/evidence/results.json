@@ -1,0 +1,41 @@
+{
+  "results": [
+    {
+      "width": 1280,
+      "variant": "new-task",
+      "bannerTop": 189.640625,
+      "bannerBottom": 231.640625,
+      "composerTop": 239.640625,
+      "greetingBottom": 165.640625,
+      "gap": 8
+    },
+    {
+      "width": 1280,
+      "variant": "bot",
+      "bannerTop": 280.484375,
+      "bannerBottom": 322.484375,
+      "composerTop": 330.484375,
+      "greetingBottom": 165.640625,
+      "gap": 8
+    },
+    {
+      "width": 480,
+      "variant": "new-task",
+      "bannerTop": 189.640625,
+      "bannerBottom": 234.015625,
+      "composerTop": 242.015625,
+      "greetingBottom": 165.640625,
+      "gap": 8
+    },
+    {
+      "width": 480,
+      "variant": "bot",
+      "bannerTop": 280.484375,
+      "bannerBottom": 324.859375,
+      "composerTop": 332.859375,
+      "greetingBottom": 165.640625,
+      "gap": 8
+    }
+  ],
+  "errors": []
+}
