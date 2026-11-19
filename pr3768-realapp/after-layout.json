@@ -1,0 +1,86 @@
+[
+  {
+    "width": 1280,
+    "banner": {
+      "x": 378,
+      "y": 263,
+      "width": 772,
+      "height": 41,
+      "top": 263,
+      "right": 1150,
+      "bottom": 304,
+      "left": 378
+    },
+    "greeting": {
+      "x": 354,
+      "y": 218.25,
+      "width": 533.609375,
+      "height": 24.75,
+      "top": 218.25,
+      "right": 887.609375,
+      "bottom": 243,
+      "left": 354
+    },
+    "labels": [
+      "What's up next, e2e-1795102062279@example.com?",
+      "Expand workspace panel",
+      "Open workspace panel"
+    ]
+  },
+  {
+    "width": 720,
+    "banner": {
+      "x": 304,
+      "y": 243.4375,
+      "width": 360,
+      "height": 60.5625,
+      "top": 243.4375,
+      "right": 664,
+      "bottom": 304,
+      "left": 304
+    },
+    "greeting": {
+      "x": 280,
+      "y": 173.5,
+      "width": 408,
+      "height": 49.5,
+      "top": 173.5,
+      "right": 688,
+      "bottom": 223,
+      "left": 280
+    },
+    "labels": [
+      "What's up next, e2e-1795102062279@example.com?",
+      "Expand workspace panel",
+      "Open workspace panel"
+    ]
+  },
+  {
+    "width": 480,
+    "banner": {
+      "x": 304,
+      "y": 223,
+      "width": 120,
+      "height": 284,
+      "top": 223,
+      "right": 424,
+      "bottom": 507,
+      "left": 304
+    },
+    "greeting": {
+      "x": 280,
+      "y": 104,
+      "width": 168,
+      "height": 99,
+      "top": 104,
+      "right": 448,
+      "bottom": 203,
+      "left": 280
+    },
+    "labels": [
+      "What's up next, e2e-1795102062279@example.com?",
+      "Expand workspace panel",
+      "Open workspace panel"
+    ]
+  }
+]
